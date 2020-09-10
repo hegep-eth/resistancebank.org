@@ -1,0 +1,827 @@
+---
+output:
+  pdf_document:
+    keep_tex: true
+    latex_engine: xelatex
+header-includes:
+- |
+  ```{=latex} 
+  \usepackage{microtype}
+  \usepackage{fontspec}
+  \setmainfont{Times.otf}[BoldFont = TimesBold.otf]
+  \usepackage{ragged2e}
+  \renewcommand{\footnotesize}{\scriptsize \justify}
+  \usepackage{setspace}
+  \usepackage{xcolor}
+  \definecolor{very-light-gray}{gray}{0.95}
+  \pagenumbering{gobble}
+  \makeatletter
+  \def\MT@is@composite#1#2\relax{%
+    \ifx\\#2\\\else
+      \expandafter\def\expandafter\MT@char\expandafter{\csname\expandafter
+                      \string\csname\MT@encoding\endcsname
+                      \MT@detokenize@n{#1}-\MT@detokenize@n{#2}\endcsname}%
+      % 3 lines added:
+      \ifx\UnicodeEncodingName\@undefined\else
+        \expandafter\expandafter\expandafter\MT@is@uni@comp\MT@char\iffontchar\else\fi\relax
+      \fi
+      \expandafter\expandafter\expandafter\MT@is@letter\MT@char\relax\relax
+      \ifnum\MT@char@ < \z@
+        \ifMT@xunicode
+          \edef\MT@char{\MT@exp@two@c\MT@strip@prefix\meaning\MT@char>\relax}%
+            \expandafter\MT@exp@two@c\expandafter\MT@is@charx\expandafter
+              \MT@char\MT@charxstring\relax\relax\relax\relax\relax
+        \fi
+      \fi
+    \fi
+  }
+  % new:
+  \def\MT@is@uni@comp#1\iffontchar#2\else#3\fi\relax{%
+    \ifx\\#2\\\else\edef\MT@char{\iffontchar#2\fi}\fi
+  }
+  \makeatother
+  ```
+classoption:
+  - landscape
+  - a4paper
+fontsize: 11pt
+geometry: top=1cm, right=1.7cm, bottom=0.6cm, left=1.7cm
+urlcolor: blue
+params:
+  ISO3: NA
+  Country: NA
+  Country_ISO3: NA
+  Continent: NA
+  Population: NA
+  Density: NA
+  GDP: NA
+  Antibiotics: NA
+  PAG_2030: NA
+  Cattle: NA
+  Chickens: NA
+  Pigs: NA
+  resistancebank_surveys: NA
+  AMR_Exposure_data_rm: NA
+  resistancebank_amr: NA
+---
+
+```{r setup, include=FALSE}
+# - \setmainfont[Path = \string~/Desktop/, BoldFont =  TimesBold, Extension = .otf]{Times}
+# - \setmainfont[ExternalLocation=\string~/, BoldFont =  TimesBold, Extension = .otf]{Times}
+knitr::opts_chunk$set(echo = FALSE,
+                      warning = FALSE,
+                      message = FALSE,
+                      fig.pos = "h",
+                      dev = "cairo_pdf")
+
+### Adding minipages in Rmarkdown only seems to work when returned from function
+fig_table_verysmall <- function() {
+  return("\\begin{minipage}{0.30\\textwidth}")
+}
+
+fig_table_small <- function() {
+  return("\\begin{minipage}{0.33\\textwidth}")
+}
+
+fig_table_large <- function() {
+  return("\\begin{minipage}{0.67\\textwidth}")
+}
+
+fig_table_verylarge <- function() {
+  return("\\begin{minipage}{0.70\\textwidth}")
+}
+
+fig_table_end <- function() {
+  return("\\end{minipage}")
+}
+```
+
+\setstretch{1}
+
+\begin{center}
+\LARGE\textbf{Antimicrobial resistance in animals in `r params[["Country"]]`}\\
+\normalsize\href{https://resistancebank.org}{resistancebank.org}
+\end{center}
+
+`r fig_table_small()`
+
+```{r P50 map, out.width="248pt", out.height="186pt"}
+selected_country <- params[["Country"]]
+
+download.file(url = paste0("https://amr-hegep-bucket.s3.eu-central-1.amazonaws.com/Countries_information/P50_rasters/",
+                    gsub(pattern = " ",
+                         replacement = "+",
+                         x = selected_country),
+                    ".png"),
+          destfile = paste0(tempdir(),
+                            gsub(pattern = " ",
+                                 replacement = "+",
+                                 x = selected_country),
+                            ".png"),
+          mode = 'wb')
+
+knitr::include_graphics(path = paste0(tempdir(),
+                                      gsub(pattern = " ",
+                                           replacement = "+",
+                                            x = selected_country),
+                                      ".png"))
+```
+
+\vspace{2pt}
+
+\setstretch{0.3}
+
+\begingroup\scriptsize
+\textbf{Figure 1}. Hotspots. Percentage of antimicrobial drugs with resistance higher than 50\%, \href{https://science.sciencemag.org/content/365/6459/eaaw1944?fbclid=IwAR28EBh4FvZXyrDmaIFCFcLdK_8yyku0AFfjUUbDvkn-S9OwEisEXA7S1zo}{Van Boeckel \& Pires, Global Trends in Antimicrobial Resistance in Animals in Low- and Middle-Income Countries, Science 365, (2019)}.
+\endgroup
+
+\setstretch{1}
+
+\vspace{4pt}
+
+```{r piecharts, fig.align='center', fig.height=3}
+resistancebank_surveys <- params[["resistancebank_surveys"]]
+
+# resistancebank_surveys <- subset(resistancebank_surveys,
+#                                  is.element(el = ISO3,
+#                                             set = "ETH") &
+#                                    is.element(el = Author,
+#                                               set = "Pires"))
+
+resistancebank_surveys$Study <- 1
+
+years <- data.frame("DOI" = "nostudy",
+                    "PubDate" = as.character(seq(from = 2000,
+                                                 to = as.integer(format(Sys.Date(), "%Y")),
+                                                 by = 1)),
+                    "Study" = 0)
+
+for (i in names(resistancebank_surveys)[!names(resistancebank_surveys) %in% c("DOI", "PubDate", "Study")]) {
+  
+  years[, i] <- NA
+  
+}
+
+resistancebank_surveys <- rbind(resistancebank_surveys,
+                                years[!years$PubDate %in% resistancebank_surveys$PubDate, ])
+
+resistancebank_surveys <- resistancebank_surveys[order(resistancebank_surveys$PubDate,
+                                                       decreasing = FALSE), ]
+
+my_breaks <- seq(from = "2000",
+                 to = max(as.character(years$PubDate)),
+                 by = 1)
+
+resistancebank_surveys$Type <- sapply(X = 1:nrow(resistancebank_surveys),
+                                      FUN = function(i) {
+                                        
+                                        if (grepl(pattern = "^[^0-9]",
+                                                  x = resistancebank_surveys$DOI[i]) == TRUE) {
+                                          
+                                          factor("Gray literature") 
+                                          
+                                        } else {
+                                          
+                                          factor("Peer-reviewed")
+                                          
+                                        }
+                                        
+                                      })
+
+if (length(unique(resistancebank_surveys$Type)) == 2) {
+  
+  resistancebank_surveys$Type <- factor(x = resistancebank_surveys$Type,
+                                        levels = c("Gray literature",
+                                                   "Peer-reviewed"))
+  
+}
+
+country_data <- data.frame("Variable" = c("Population",
+                                          "GDP",
+                                          "Peer-reviewed",
+                                          "Gray literature",
+                                          "Cattle",
+                                          "Chickens",
+                                          "Pigs",
+                                          "Antibiotics",
+                                          "PAG_2030"),
+                           "Value" = c(params[["Population"]],
+                                       params[["GDP"]],
+                                       sum(subset(x = resistancebank_surveys,
+                                                  subset = !is.element(el = DOI,
+                                                                       set = "nostudy"))$Type == "Peer-reviewed"),
+                                       sum(subset(x = resistancebank_surveys,
+                                                  subset = !is.element(el = DOI,
+                                                                       set = "nostudy"))$Type == "Gray literature"), # No Gray literature = sum will be 0, fine for plotting
+                                       params[["Cattle"]],
+                                       params[["Chickens"]],
+                                       params[["Pigs"]],
+                                       params[["Antibiotics"]],
+                                       params[["PAG_2030"]]))
+
+###= Antimicrobial usage =#####
+au_piechart <- ggplot(data = country_data[1, ], # I've used the "Population" data because it's never 0 and hence the one-colour pie chart is displayed
+       aes(x = "",
+           y = Value)) +
+  geom_bar(stat = "identity",
+           width = 1,
+           fill = "lightblue") +
+  coord_polar(theta = "y",
+              start = 0) +
+  labs(title = expression(paste(bold(Antimicrobial),
+                                " ",
+                                bold(use^1)))) +
+  geom_text(label = paste(ifelse(test = is.na(country_data$Value[8]),
+                                  yes = "---",
+                                  no = paste0(format(x = country_data$Value[8],
+                                                     big.mark = ","),
+                                              " tons/y")),
+                          ifelse(test = is.na(country_data$Value[9]),
+                                 yes = "---",
+                                 no = paste0(ifelse(test = country_data$Value[9] > 0, yes = "+", no = ""), country_data$Value[9], "% in 2030")),
+                          " ",
+                          " ",
+                          sep = "\n"),
+            size = 4.7,
+            family = "Times",
+            position = position_stack(vjust = 0.5)) +
+  theme_void() +
+  theme(text = element_text(family = "Times"),
+        plot.title = element_text(size = 14,
+                                  face = "bold",
+                                  hjust = 0.5),
+        legend.position = "none")
+
+###= Livestock =#####
+livestock_data <- na.omit(country_data[5:7, ])
+
+livestock_data$Rounded <- sapply(X = 1:nrow(livestock_data),
+                                 FUN = function(i) {
+                                   
+                                   if (livestock_data$Value[i] >= 1e9) {
+                                     
+                                     paste(format(round(x = livestock_data$Value[i]/1e9,
+                                                          digits = 2),
+                                                    big.mark = ",",
+                                                    trim = TRUE),
+                                             "B",
+                                             sep = "")
+                                     
+                                   } else if (livestock_data$Value[i] >= 1e6) {
+                                     
+                                     paste(format(round(x = livestock_data$Value[i]/1e6,
+                                                          digits = 2),
+                                                    big.mark = ",",
+                                                    trim = TRUE),
+                                             "M",
+                                             sep = "")
+                                     
+                                   } else if (livestock_data$Value[i] >= 1e3 &
+                                              livestock_data$Value[i] < 1e6) {
+                                     
+                                     paste(format(round(x = livestock_data$Value[i]/1e3,
+                                                          digits = 2),
+                                                    big.mark = ",",
+                                                    trim = TRUE),
+                                             "K",
+                                             sep = "")
+                                     
+                                   } else {
+                                     
+                                     format(round(x = livestock_data$Value[i],
+                                                  digits = 2),
+                                            trim = TRUE)
+                                     
+                                   }
+                                   
+                                 })
+
+livestock_piechart <- ggplot(data = livestock_data,
+       aes(x = "",
+           y = Value,
+           fill = Variable)) +
+  geom_bar(stat = "identity",
+           width = 1) +
+  coord_polar(theta = "y",
+              start = 0) +
+  scale_fill_manual(values = c("Cattle" = "#83C77A",
+                               "Chickens" = "#F9A600",
+                               "Pigs" = "#F5C0CD")[c(unique(livestock_data$Variable))]) +
+  labs(title = expression(paste(bold(Livestock), " ", bold(heads^2)))) +
+  theme_void() +
+  ggrepel::geom_text_repel(aes(label = Rounded),
+                           size = 4.7,
+                           family = "Times",
+                           position = position_stack(vjust = 0.5)) +
+  theme_void() +
+  theme(text = element_text(family = "Times"),
+        plot.title = element_text(size = 14,
+                                  face = "bold",
+                                  hjust = 0.5),
+        legend.position = c(0.5, -0.05),
+        legend.box = "vertical",
+        legend.direction = "vertical",
+        legend.title = element_blank(),
+        legend.text = element_text(size = 13),
+        legend.margin = margin(0, 0, 0, 0),
+        legend.box.margin = margin(0, 0, 0, 0),
+        legend.key.size = unit(0.6, "cm")) +
+  guides(fill = guide_legend(ncol = 2))
+
+###= Population & GDP =#####
+population_piechart <- ggplot(data = country_data[1, ],
+       aes(x = "",
+           y = Value)) +
+  geom_bar(stat = "identity",
+           width = 1,
+           fill = "grey85") +
+  coord_polar(theta = "y",
+              start = 0) +
+  labs(title = expression(paste(bold(Population^3), ", ", bold(GDP^4)))) +
+  geom_text(label = paste(paste(ifelse(test = country_data$Value[1] >= 1e9,
+                                       yes = paste(format(round(x = country_data$Value[1]/1e9,
+                                                               digits = 1),
+                                                               trim = TRUE),
+                                                        "B",
+                                                        sep = ""),
+                                       no = ifelse(test = country_data$Value[1] < 1e9 & country_data$Value[1] >= 1e6,
+                                                   yes = paste(format(round(x = country_data$Value[1]/1e6,
+                                                                            digits = 1),
+                                                                      trim = TRUE),
+                                                        "M",
+                                                        sep = ""),
+                                                   no = ifelse(test = country_data$Value[1] < 1e6 & country_data$Value[1] >= 1e3,
+                                                               yes = paste(format(round(x = country_data$Value[1]/1e3,
+                                                                                        digits = 1),
+                                                                                  trim = TRUE),
+                                                                           "K",
+                                                                           sep = ""),
+                                                               no = country_data$Value[1]))),
+                                     " inhab.",
+                                     sep = ""),
+                          ifelse(test = is.na(country_data$Value[2]),
+                                 yes = paste0("---"),
+                                 no = ifelse(test = country_data$Value[2] >= 1e3,
+                                             yes = paste(format(round(x = country_data$Value[2]/1e3,
+                                                                      digits = 1),
+                                                                trim = TRUE),
+                                                         "K USD/in.",
+                                                         sep = ""),
+                                             no = paste(country_data$Value[2],
+                                                        "USD/in."))),
+                          " ",
+                          " ",
+                          sep = "\n"),
+            size = 4.7,
+            family = "Times",
+            position = position_stack(vjust = 0.5)) +
+  theme_void() +
+  theme(text = element_text(family = "Times"),
+        plot.title = element_text(size = 14,
+                                  face = "bold",
+                                  hjust = 0.5),
+        legend.position = "none")
+
+###= Studies and gray literature =#####
+sgl_piechart <- ggplot(data = {if (sum(subset(x = resistancebank_surveys,
+                                                  subset = !is.element(el = DOI,
+                                                                       set = "nostudy"))$Type == "Gray literature") != 0) {country_data[3:4, ]} else {country_data[3, ]}},
+       aes(x = "",
+           y = Value,
+           fill = Variable)) +
+  geom_bar(stat = "identity",
+           width = 1) +
+  geom_text(aes(label = Value),
+            size = 4.7,
+            family = "Times",
+            position = position_stack(vjust = 0.5)) +
+  scale_fill_manual(values = c("Gray literature" = "#FF6C67",
+                               "Peer-reviewed" = "#00C2C6")) +
+  coord_polar(theta = "y",
+              start = 0) +
+  labs(title = expression(bold("Surveys"))) +
+  theme_void() +
+  theme(text = element_text(family = "Times"),
+        plot.title = element_text(size = 14,
+                                  face = "bold",
+                                  hjust = 0.5),
+        legend.position = c(0.5, -0.05),
+        legend.box = "vertical",
+        legend.direction = "vertical",
+        legend.title = element_blank(),
+        legend.text = element_text(size = 13),
+        legend.margin = margin(0, 0, 0, 0),
+        legend.box.margin = margin(0, 0, 0, 0),
+        legend.key.size = unit(0.6, "cm"))
+
+###= 4 piecharts combination
+gridExtra::grid.arrange(au_piechart,
+                        livestock_piechart,
+                        population_piechart,
+                        sgl_piechart,
+                        nrow = 1)
+```
+
+\vspace{4pt}
+
+```{r, fig.align='center', fig.height=2.9}
+ggplot(data = resistancebank_surveys,
+       aes(x = as.factor(PubDate),
+           y = Study,
+           fill = Type)) +
+  stat_summary(fun = sum,
+               geom = "bar",
+               position = "stack") + 
+  geom_hline(yintercept = sum(resistancebank_surveys$Study)/length(my_breaks),
+             linetype = "dashed",
+             colour = "red",
+             size = 0.8) +
+    scale_fill_manual(values = c("Gray literature" = "#FF6C67",
+                                 "Peer-reviewed" = "#00C2C6")[c(unique(resistancebank_surveys$Type))]) +
+    scale_x_discrete(breaks = my_breaks,
+                     labels = label_fill(orig = my_breaks,
+                                         .mod = 6)) +
+    scale_y_continuous(breaks = function(x) unique(floor(pretty(x)))) +
+    labs(x = "Year",
+         y = "Surveys") +
+    theme(text = element_text(family = "Times"),
+          axis.title = element_text(size = 14,
+                                    face = "bold"),
+          axis.text = element_text(colour = "black",
+                                   size = 14),
+          plot.margin = margin(t = 0.3,
+                               r = 0.3,
+                               b = 0.3,
+                               l = 0.3,
+                               unit = "cm"),
+          panel.background = element_rect(fill = "white"),
+          panel.grid = element_line(colour = "gray93"),
+          legend.position = "none")
+```
+
+\vspace{2pt}
+
+\setstretch{0.3}
+
+\begingroup\scriptsize
+\textbf{Figure 2}. Number of peer-reviewed surveys {`r if (sum(subset(x = resistancebank_surveys, subset = !is.element(el = DOI, set = "nostudy"))$Type == "Gray literature") != 0) {"and gray literature reports," } else {""}` }and average number of point prevalence surveys per year (red line).
+\endgroup
+
+`r fig_table_end()`
+`r fig_table_large()`
+
+\setstretch{0.3}
+
+\vspace{2pt}
+
+```{r, fig.align='right', fig.height=3.6, fig.width=6.7}
+country_exposure_images_report <- country_exposure_images
+
+country_exposure_images_report$Country <- c("Senegal",
+                                            "Rwanda",
+                                            "Burkina Faso")
+
+country_exposure_images_report[1, 2] <- 0.50
+country_exposure_images_report[3, 2] <- 0.41
+country_exposure_images_report[3, 5] <- 0.10
+
+if (params[["ISO3"]] %in% params[["AMR_Exposure_data_rm"]]$ISO3) {
+
+  ggplot(data = params[["AMR_Exposure_data_rm"]],
+         aes(x = reorder_within(Country, desc(Exposure), Animal_species),
+             y = Exposure)) +
+    geom_col(aes(fill = Continent),
+             colour = "black",
+             size = 0.1) +
+    ggimage::geom_image(data = country_exposure_images_report,
+                        image = country_exposure_images_report$image,
+                        size = country_exposure_images_report$Size - 0.043,
+                        asp = country_exposure_images_report$Aspect_ratio + 5.4) +
+    lemon::facet_rep_wrap(~Animal_species,
+                          scales = "free",
+                          repeat.tick.labels = "all",
+                          nrow = 3) +
+    scale_fill_manual(values = c("orange",
+                                 "red",
+                                 "black")) +
+    scale_y_continuous(breaks = seq(from = 0,
+                                    to = 0.5,
+                                    by = 0.2)) +
+    scale_x_reordered() +
+    labs(x = NULL,
+         y = expression(paste(bold("National P50 level "), "[", bold("%"), "]")),
+         fill = NULL) +
+    theme(text = element_text(family = "Times"),
+          axis.text.x = element_text(colour = "black",
+                                     size = 4.1,
+                                     angle = 90,
+                                     hjust = 1),
+          axis.title.y = element_text(size = 7.5),
+          axis.text.y = element_text(colour = "black",
+                                     size = 7.5),
+          axis.ticks.length = unit(0.05, "cm"),
+          axis.ticks.x = element_blank(),
+          axis.ticks.y = element_line(size = 0.2),
+          panel.background = element_blank(),
+          panel.spacing = unit(0, "lines"),
+          strip.text.x = element_blank(),
+          strip.background = element_blank(),
+          legend.text = element_text(size = 7.5),
+          legend.box = "horizontal",
+          legend.direction = "horizontal",
+          legend.position = c(0.5, 0.97),
+          legend.margin = margin(0, 0, 0, 0),
+          legend.box.margin = margin(0, 0, 0, 0),
+          legend.key.size = unit(0.3, "cm"),
+          legend.spacing.x = unit(0.1, "cm")) +
+    geom_segment(aes(x = reorder_within(Country, desc(Exposure), Animal_species),
+                     xend = reorder_within(Country, desc(Exposure), Animal_species),
+                     y = Exposure + 0.14,
+                     yend = Exposure + 0.015,
+                     color = Selection,
+                     alpha = Selection),
+                 size = 0.6,
+                 arrow = arrow(length = unit(1, "mm"),
+                               type = "closed"),
+                 show.legend = FALSE) +
+    scale_color_manual(values = c("TRUE" = "black",
+                                  "FALSE" = "white")) +
+    scale_alpha_manual(values = c("TRUE" = 1,
+                                  "FALSE" = 0))
+
+}
+
+# ggsave(filename = paste0(tempdir(), "/plot_nico.png"),
+#        plot = a)
+# 
+# put_object(file = paste0(tempdir(), "/plot_nico.png"),
+#              object = "plot_nico.png",
+#              bucket = "amr-hegep-bucket",
+#              acl = c("public-read"))
+```
+
+```{r, fig.align='right', out.height="297pt", out.width="475.2pt"}
+if (!(params[["ISO3"]] %in% params[["AMR_Exposure_data_rm"]]$ISO3)) {
+  
+  download.file(url = "https://amr-hegep-bucket.s3.eu-central-1.amazonaws.com/Countries_information/amr_exposure_plot_report_transparent.png",
+                destfile = paste0(tempdir(),
+                                  "amr_exposure_plot_report_transparent.png"),
+                mode = 'wb')
+
+  knitr::include_graphics(path = paste0(tempdir(),
+                                        "amr_exposure_plot_report_transparent.png"))
+  
+}
+```
+
+\vspace{2pt}
+
+\setlength{\leftskip}{1cm}
+
+\begingroup\scriptsize
+\textbf{Figure 3}. Relative country-level exposure to antimicrobial resistance in chickens, pigs and cattle. This metric quantifies the exposure levels of the animal populations. The analysis was restricted to countries with at least 10 million chicken, 250,000 pigs, and 500,000 cattle heads.
+\endgroup
+
+\vspace{18pt}
+
+```{r, fig.align='right', fig.height=2.3, fig.width=6.7}
+resistancebank_amr <- params[["resistancebank_amr"]]
+
+# s3load("resistancebank_amr.rda",
+#        "amr-hegep-bucket")
+
+# resistancebank_amr <- subset(resistancebank_amr,
+#                              is.element(ISO3,
+#                                         "NER"))
+
+if (nrow(resistancebank_amr) > 0) {
+
+  resistancebank_amr$DOI <- sapply(X = 1:nrow(resistancebank_amr),
+                FUN = function(i) {
+
+                  DOI <- resistancebank_amr$DOI[i]
+
+                  if (!is.na(DOI)) {
+
+                    return(as.character(DOI))
+
+                  } else {
+
+                    gsub(pattern = " ",
+                         replacement = "",
+                         x = paste0(resistancebank_amr$Author[i],
+                                    resistancebank_amr$PubDate[i],
+                                    "_",
+                                    substr(x = digest::digest(resistancebank_amr$YCoord[i]),
+                                           start = 1,
+                                           stop = 15),
+                                    substr(x = digest::digest(resistancebank_amr$XCoord[i]),
+                                           start = 1,
+                                           stop = 15)))
+
+                  }
+
+                })
+  
+  resistancebank_amr_list <- split(x = resistancebank_amr,
+                                   f = list(resistancebank_amr$Author,
+                                            resistancebank_amr$DOI,
+                                            resistancebank_amr$YCoord,
+                                            resistancebank_amr$XCoord,
+                                            resistancebank_amr$PubDate),
+                                   drop = TRUE,
+                                   lex.order = TRUE)
+
+  resistancebank_amr_pathogens <- NULL
+  
+  for (i in 1:length(resistancebank_amr_list)) {
+    
+    resistancebank_amr_pathogens <- c(resistancebank_amr_pathogens, 
+                                      as.character(unique(resistancebank_amr_list[[i]][["Pathogens"]])))
+    
+  }
+
+  # Number of surveys per pathogen
+  named_resistancebank_amr_pathogens <- c(table(resistancebank_amr_pathogens))
+  
+  # Number of isolates per pathogen
+  resistancebank_amr_isolates <- resistancebank_amr %>% 
+    dplyr::distinct(Author, DOI, YCoord, XCoord, PubDate, ISO3, Species, Pathogens, NIsolates) %>% 
+    dplyr::group_by(Pathogens) %>% 
+    dplyr::summarise(Isolates = sum(NIsolates, na.rm = T))
+  
+  facets_resistancebank_amr_names <- NULL
+
+  # Facets text
+  for (i in names(named_resistancebank_amr_pathogens)) {
+
+    facets_resistancebank_amr_names <- c(facets_resistancebank_amr_names,
+                                         bquote(bold(.(names(named_resistancebank_amr_pathogens)[which(names(named_resistancebank_amr_pathogens) == i)])) ~
+                                                bold("("*n[s]*" =" ~ bold(.(format(named_resistancebank_amr_pathogens[[i]],
+                                                                                   big.mark = ",")))*"," ~
+                                                bold(n[i]*" =" ~ bold(.(format(resistancebank_amr_isolates$Isolates[resistancebank_amr_isolates$Pathogens == i],
+                                                                               big.mark = ",")))*")"))))
+
+  }
+
+  resistancebank_amr$Pathogens <- factor(resistancebank_amr$Pathogens,
+                                         labels = facets_resistancebank_amr_names)
+
+  # Barplot
+  resistancebank_amr_plot <- ggplot(data = resistancebank_amr,
+         aes(x = reorder_within(Compound,
+                                desc(Rescom),
+                                Pathogens),
+             y = Rescom,
+             fill = Species)) +
+    stat_summary(geom = "bar",
+                 fun = mean,
+                 position = position_dodge(preserve = "single"),
+                 colour = "black",
+                 size = 0.1,
+                 width = {if (length(unique(resistancebank_amr$Compound)) <= 9 &
+                              length(unique(resistancebank_amr$Pathogens)) == 1) {0.2}}) +
+    stat_summary(geom = "errorbar",
+                 fun.data = mean_se,
+                 position = position_dodge(preserve = "single",
+                                           width = 0.9),
+                 width = ifelse(test = length(unique(resistancebank_amr$Compound)) <= 9 &
+                                       length(unique(resistancebank_amr$Pathogens)) == 1,
+                                yes = 0.1,
+                                no = 0.4),
+                 size = 0.1) +
+    scale_y_continuous(breaks = c(0, 50, 100),
+                       limits = c(0, 100)) +
+    scale_fill_manual(values = c("Cattle" = "#83C77A",
+                                 "Chicken" = "#F9A600",
+                                 "Pig" = "#F5C0CD",
+                                 "Sheep" = "#BFBFBF",
+                                 "Duck" = "#00BFC4",
+                                 "Buffalo" = "#F9766D",
+                                 "Horse" = "#C77CFF")[c(unique(as.character(resistancebank_amr$Species)))]) +
+    scale_x_reordered() +
+    facet_wrap(facets = ~Pathogens,
+               scales = "free_x",
+               labeller = label_parsed) +
+    labs(x = NULL,
+         y = expression(paste(bold("Resistance "), "[", bold("%"), "]"))) +
+    theme(text = element_text(family = "Times"),
+          axis.title = element_text(size = 7.5),
+          axis.title.x = element_text(face = "bold"),
+          axis.text.x = element_text(size = 5,
+                                     colour = "black",
+                                     angle = 90,
+                                     hjust = 1),
+          axis.text.y = element_text(colour = "black",
+                                       size = 7.5),
+          axis.ticks = element_line(size = 0.2),
+          axis.ticks.length = unit(0.05, "cm"),
+          strip.text.x = element_text(size = 7.5,
+                                      face = "bold"),
+          strip.background.x = element_rect(fill = "white"), 
+          panel.background = element_rect(fill = "white"),
+          panel.grid.major.x = element_blank(),
+          panel.grid.major.y = element_line(colour = "lightgray",
+                                            size = 0.1),
+          legend.text = element_text(size = 6.8),
+          legend.title = element_blank(),
+          legend.margin = margin(0, 0, 0, 0),
+          legend.box.margin = margin(0, 0, 0, 0),
+          legend.key.size = unit(0.23, "cm"),
+          legend.spacing.x = unit(0.1, 'cm'),
+          legend.background = element_rect(color = NA))
+  
+  if (length(unique(resistancebank_amr$Pathogens)) == 1 |
+      length(unique(resistancebank_amr$Pathogens)) == 2) {
+  
+    resistancebank_amr_plot <- resistancebank_amr_plot +
+      theme(legend.box = "horizontal",
+            legend.direction = "horizontal",
+            legend.position = c(ifelse(test = length(unique(resistancebank_amr$Pathogens)) == 1 & 
+                                              length(unique(resistancebank_amr$Species)) == 4,
+                                       yes = 0.1,
+                                       no = ifelse(test = length(unique(resistancebank_amr$Pathogens)) == 1 & 
+                                                          length(unique(resistancebank_amr$Species)) == 3,
+                                                   yes = 0.07,
+                                                   no = ifelse(test = length(unique(resistancebank_amr$Pathogens)) == 1 & 
+                                                                      length(unique(resistancebank_amr$Species)) == 2,
+                                                               yes = 0.05,
+                                                               no = ifelse(test = length(unique(resistancebank_amr$Pathogens)) == 1 & 
+                                                                                  length(unique(resistancebank_amr$Species)) == 1,
+                                                                           yes = 0.032,
+                                                                           no = 0.5)))),
+                                1.08))
+    
+  } else if (length(unique(resistancebank_amr$Pathogens)) == 3) {
+    
+    resistancebank_amr_plot <- resistancebank_amr_plot +
+      theme(legend.key = element_rect(fill = NA,
+                                      colour = "black",
+                                      size = 0.1),
+            legend.position = c(0.95, 0.87))
+    
+  } else if (length(unique(resistancebank_amr$Pathogens)) == 4) {
+    
+    resistancebank_amr_plot <- resistancebank_amr_plot +
+      theme(legend.key = element_rect(fill = NA,
+                                      colour = "black",
+                                      size = 0.1),
+            legend.position = c(0.97, 1.03))
+    
+  }
+  
+  resistancebank_amr_plot
+
+}
+```
+
+```{r, fig.align='right', out.height="294pt", out.width="470.4pt"}
+if (nrow(resistancebank_amr) == 0) {
+  
+  download.file(url = "https://amr-hegep-bucket.s3.eu-central-1.amazonaws.com/Countries_information/plot_AGISAR_transparent.png",
+                destfile = paste0(tempdir(),
+                                  "plot_AGISAR_transparent.png"),
+                mode = 'wb')
+
+  knitr::include_graphics(path = paste0(tempdir(),
+                                        "plot_AGISAR_transparent.png"))
+  
+}
+```
+
+\vspace{2pt}
+
+\begingroup\scriptsize
+\textbf{Figure 4}. Resistance rates, number of surveys (n$_{s}$) and total number of isolates tested (n$_{i}$) by pathogen listed by the \href{https://www.who.int/foodsafety/areas_work/antimicrobial-resistance/agisar/en/}{AGISAR consortium}. See protocol S1 in \href{https://science.sciencemag.org/content/sci/suppl/2019/09/18/365.6459.eaaw1944.DC1/aaw1944-Van-Boeckel-SM.pdf}{Van Boeckel \& Pires, Science 365, (2019)}.
+\endgroup
+
+`r fig_table_end()`
+
+\setstretch{0.3}
+
+`r fig_table_verylarge()`
+
+\begingroup\scriptsize
+\rule[2pt]{7cm}{0.3pt}\\
+$^1$Data updated to 2013. Source: \href{https://science.sciencemag.org/content/357/6358/1350}{Van Boeckel et al., Reducing antimicrobial use in food animals, Science 357, 1350 - 1352 (2017)}.\\
+$^2$Data updated to 2017. Source: \href{http://www.fao.org/faostat/en/\#data/QA}{FAOSTAT}.\\
+$^3$Data updated to 2018. Source: \href{http://wdi.worldbank.org}{World Development Indicators}.\\  
+$^4$Data updated to 2016. Source: \href{https://data.worldbank.org/indicator/ny.gdp.mktp.cd}{World Bank Group}.\\
+\endgroup
+
+`r fig_table_end()`
+`r fig_table_verysmall()`
+
+\fcolorbox{black}{very-light-gray}{\begin{minipage}{21em}
+\begingroup\footnotesize
+\begin{center}
+\textbf{Disclaimer}\\
+\end{center}
+\endgroup
+\rule[2pt]{7.8cm}{0.3pt}\\
+\begingroup\tiny
+The information in this country-report result from the aggregation, and extrapolation of data from surveys conducted by independent scientists. It does not reflect the official positions of a country’s veterinary authorities on its antimicrobial resistance levels in animals. The detailed methodology and data source for this country-report are presented in \href{https://science.sciencemag.org/content/365/6459/eaaw1944?fbclid=IwAR28EBh4FvZXyrDmaIFCFcLdK_8yyku0AFfjUUbDvkn-S9OwEisEXA7S1zo}{Van Boeckel \& Pires, 2019}.
+\endgroup
+\end{minipage}}
+
+`r fig_table_end()`

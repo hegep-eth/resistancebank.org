@@ -1,0 +1,482 @@
+
+/*##########========== World Map ==========##########*/
+#map {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+  padding: 0;
+}
+
+
+
+
+
+.leaflet-control-layers{ 
+	background-color: white;
+    width: 140px;
+    height: 485px;
+    padding-top:45px;
+}
+
+
+
+
+
+.leaflet-popup-content {
+  width: 1500px;
+  /*z-index: 1500;*/
+  /*opacity: 0.50;*/
+}
+
+
+
+
+
+#name_Maps_panel {
+/*Appearence*/
+	background-color: transparent;
+  	padding: 0px 0px 0px 0px;
+  	margin: auto;
+  	z-index: 1000;
+}
+
+
+
+
+
+/*###=== clearableTextInput ===###*/
+.text-input-clearable {
+  	border: 1px solid;
+  	border-radius: 3pt;
+  	width: 390px;
+  	border-color: #CCCCCC;
+  	background-color: white;
+  	padding: 1px 6px 1px 1px;
+  	display: inline-block;
+}
+
+.text-input-clearable input {
+  	border: none;
+  	background: none;
+  	width: 320px;
+  	outline: none;
+  	padding: 0 0 4px 5px;
+  	margin: 0px 0px 0px 0px;
+  	font:inherit;
+}
+
+.text-input-clearable span {
+  	cursor:pointer;
+  	font-size: 20px;
+  	color: #C3C3C3;
+  	width: 320px;
+  	transition: color 100ms 100ms;
+  	font-weight:bold;
+  	visibility:hidden;
+}
+
+.text-input-clearable span:hover {
+	color: #999999;
+  	transition-delay: 0;
+}
+
+
+
+
+
+/*#####===== Zoom to location =====#####*/
+#zoom_to_location {
+	color: #C3C3C3;
+	background-color: transparent;
+	padding-top: 8.35px;
+	box-shadow: none!important;
+    outline: 0;
+    border-width: 0px;
+}
+
+#zoom_to_location:hover {
+	color: #999999;
+    transition-delay: 0;
+}
+
+
+
+
+/*##########========== Initial panel ==========##########*/
+#initial_panel {
+	background-color: white;
+  	opacity: 0.85;
+  	padding: 20px 20px 20px 20px;
+  	margin: auto;
+  	border-radius: 5pt;
+  	box-shadow: 0pt 0pt 6pt 0px rgba(61,59,61,0.48);
+    padding-bottom: 2mm;
+    padding-top: 1mm;
+}
+
+#close_initial_panel {
+	box-shadow: none!important;
+    outline: 0;
+    color: #C3C3C3;
+    transition: color 100ms 100ms;
+    border-width: 0px;
+}
+
+#close_initial_panel:hover {
+	color: #999999;
+    transition-delay: 0;
+}
+
+#explore_amr_map {
+	border-width: 0px;
+}
+
+#add_your_survey1 {
+	border-width: 0px;
+}
+
+#download_RESBANK2 {
+	border-width: 0px;
+}
+
+
+
+
+
+
+
+
+/*##########========== Placeholder colours ==========##########*/
+#target::placeholder {
+	color: #DEDEDE;
+	transition: color 500ms 500ms;
+}
+
+#target::placeholder:active {
+	color: white;
+	transition-delay: 0;
+}
+
+
+
+
+::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+  color: #DEDEDE;
+  opacity: 1; /* Firefox */
+}
+
+:-ms-input-placeholder { /* Internet Explorer 10-11 */
+  color: #DEDEDE;
+}
+
+::-ms-input-placeholder { /* Microsoft Edge */
+  color: #DEDEDE;
+}
+
+
+
+
+
+/*##########========== Scroll bars ==========##########*/
+::-webkit-scrollbar {
+    width: 0px;
+}
+
+
+
+
+
+
+/*##########========== Controls panel ==========##########*/
+#controls_panel {
+	z-index: 1000;
+	background-color: transparent;
+  	padding: 5px 5px 5px 0px;
+  	margin: auto;
+    padding-bottom: 2mm;
+    padding-top: 1mm;
+}
+
+#controls_panel_Data_text {
+	padding: 0px 0px 0px 10px;	
+}
+
+/*###= Add your survey panel =###*/
+#add_your_survey_panel {
+	background-color: white;
+  	padding: 20px 20px 20px 20px;
+  	margin: auto;
+  	border-radius: 5pt;
+  	box-shadow: 0pt 0pt 6pt 0px rgba(61,59,61,0.48);
+    padding-bottom: 2mm;
+    padding-top: 1mm;
+    z-index: 30000;
+}
+
+#add_your_survey2 {
+	box-shadow: none!important;
+    outline: 0;
+	background-color: transparent;
+	border-width: 0px;
+	font-size: 12px;
+}
+
+#close_add_your_survey_division {
+	box-shadow: none!important;
+    outline: 0;
+    color: #C3C3C3;
+    transition: color 100ms 100ms;
+}
+
+#close_add_your_survey_division:hover {
+    color: #999999;
+    transition-delay: 0;
+}
+
+#close_add_your_survey_controls {
+	box-shadow: none!important;
+    outline: 0;
+	background-color: transparent;
+	color: #C3C3C3;
+	border-width: 0px;
+	font-size: 12px;
+}
+
+#close_add_your_survey_controls2 {
+	box-shadow: none!important;
+    outline: 0;
+	background-color: transparent;
+	color: #C3C3C3;
+	border-width: 0px;
+	font-size: 12px;
+}
+
+#download_RESBANK {
+	box-shadow: none!important;
+    outline: 0;
+	background-color: transparent;
+	border-width: 0px;
+	font-size: 12px;
+}
+
+#upload_resistancebank_template {
+	border-width: 0px;
+}
+
+#download_P50 {
+	box-shadow: none!important;
+    outline: 0;
+	background-color: transparent;
+	border-width: 0px;
+	font-size: 12px;
+}
+
+#display_summary_metrics_exposure {
+	background-color: transparent;
+	border-width: 0px;
+	font-size: 12px;
+}
+
+/*###= Country report panel =###*/
+#display_Country_report_panel {
+	box-shadow: none!important;
+    outline: 0;
+	background-color: transparent;
+	border-width: 0px;
+	font-size: 12px;
+}
+
+#close_country_report_panel_controls {
+	box-shadow: none!important;
+    outline: 0;
+    color: #C3C3C3;
+	background-color: transparent;
+	border-width: 0px;
+	font-size: 12px;
+}
+
+#download_Country_report_panel {
+	background-color: white;
+  	padding: 20px 20px 20px 20px;
+  	margin: auto;
+  	border-radius: 5pt;
+  	box-shadow: 0pt 0pt 6pt 0px rgba(61,59,61,0.48);
+    padding-bottom: 2mm;
+    padding-top: 1mm;
+    z-index: 10000;
+}
+
+#download_Country_report {
+	border-width: 0px;
+}
+
+#close_country_report_panel {
+ 	box-shadow: none!important;
+    outline: 0;
+    color: #C3C3C3;
+    transition: color 100ms 100ms;
+}
+
+#close_country_report_panel:hover {
+    color: #999999;
+    transition-delay: 0;
+}
+
+/*###= About panel =###*/
+#display_about_panel {
+	box-shadow: none!important;
+    outline: 0;
+	background-color: transparent;
+	border-width: 0px;
+	font-size: 12px;
+}
+
+#close_about_panel_controls {
+	box-shadow: none!important;
+    outline: 0;
+	color: #C3C3C3;
+	background-color: transparent;
+	border-width: 0px;
+	font-size: 12px;
+}
+
+#about_panel {
+	background-color: white;
+  	padding: 5px 5px 5px 5px;
+  	margin: auto;
+  	border-radius: 5pt;
+  	border-width: 0px;
+  	box-shadow: 0pt 0pt 6pt 0px rgba(61,59,61,0.48);
+    padding-bottom: 2mm;
+    padding-top: 1mm;
+    z-index: 20000;
+}
+
+#close_about_panel {
+	box-shadow: none!important;
+    outline: 0;
+    color: #C3C3C3;
+    transition: color 100ms 100ms;
+}
+
+#close_about_panel:hover {
+    color: #999999;
+    transition-delay: 0;
+}
+
+/*###= GitHub repository =###*/
+#open_GitHub_repository {
+	box-shadow: none!important;
+    outline: 0;
+	background-color: transparent;
+	border-width: 0px;
+	font-size: 12px;
+}
+
+/*###= Youtube tutorial =###*/
+#open_Youtube_video {
+	box-shadow: none!important;
+    outline: 0;
+	background-color: transparent;
+	border-width: 0px;
+	font-size: 12px;
+}
+
+
+
+
+
+/*##########========== Form ==========##########*/
+#form_panel {
+/*Appearence*/
+	background-color: white;
+  	padding: 20px 20px 20px 20px;
+  	margin: auto;
+  	border-radius: 5pt;
+	box-shadow: 0pt 0pt 6pt 0px rgba(61,59,61,0.48);
+    padding-bottom: 2mm;
+    padding-top: 1mm;
+    z-index: 40000;
+
+/*Functions*/
+	overflow-y: scroll;
+
+/*Fonts*/
+	font-size: 16px;
+}
+
+#close_form {
+	box-shadow: none!important;
+    outline: 0;
+    color: #C3C3C3;
+    transition: color 100ms 100ms;
+	border-width: 0px;
+}
+
+#close_form:hover {
+	color: #999999;
+    transition-delay: 0;
+}
+
+.mandatory_star {
+	color:red;
+}
+
+
+/*#####===== USER INFORMATION =====#####*/
+#show_user_information_panel {
+	border-width: 0px;
+}
+
+#hide_user_information_panel {
+	border-width: 0px;
+}
+
+/*#####===== STUDY INFORMATION =====#####*/
+#show_study_information_panel  {
+	border-width: 0px;
+}
+
+#hide_study_information_panel {
+	border-width: 0px;
+}
+
+/*#####===== AMR =====#####*/
+#show_amr_panel  {
+	border-width: 0px;
+}
+
+#hide_amr_panel {
+	border-width: 0px;
+}
+
+
+#Chicken_ecoli_question_button {
+	border-width: 0px;
+}
+
+
+
+/*#####===== COMMENTS =====#####*/
+#show_comments_panel  {
+	border-width: 0px;
+}
+
+#hide_comments_panel {
+	border-width: 0px;
+}
+
+/*#####===== Submit =====#####*/
+#submit {
+	background-color: white;
+	border-width: 0px;
+	font-weight: bold;
+	padding: 20px;
+	font-size: 18px;
+	box-shadow: 0pt 0pt 6pt 0px rgba(61,59,61,0.48);
+}
+
+
