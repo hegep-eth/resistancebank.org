@@ -71,7 +71,7 @@ Antibiotics_df <- setNames(object = data.frame(matrix(unlist(Antibiotics_list),
 load("data/functions/clearableTextInput.rda")
 load("data/functions/NEWdownloadButton.rda")
 load("data/functions/NEWfileInput.rda")
-# load("data/functions/P50_palette.rda")
+# load("data/functions/P50_palette.rda") # With the scales packages update (version 1.1.1) define it inside the reactive Leaflet object
 load("data/functions/marker_cluster.rda")
 load("data/functions/reorder_whitin.rda")
 load("data/functions/scale_x_reordered.rda")
