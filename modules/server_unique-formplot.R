@@ -32,8 +32,8 @@
                            y = Rescom)) +
     geom_errorbar(aes(ymin = 0,
                       ymax = 0,
-                      width = {if (length(unique(study$Compound)) == 1 &
-                                   length(unique(study$Species)) == 1) {0.2}}),
+                      width = {if (length(unique(Compound)) == 1 &
+                                   length(unique(Species)) == 1) {0.2}}),
                   colour = "black") +
     geom_col(aes(fill = Species),
              width = {if (length(unique(study$Compound)) == 1 &
