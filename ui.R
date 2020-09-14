@@ -282,7 +282,7 @@ br(),
                               label = div(icon(name = "youtube",
                                                lib = "font-awesome"),
                                           strong("Tutorial")),
-                              onclick ="window.open('https://www.youtube.com/watch?v=WoegZDXTjH4', '_blank')",
+                              onclick ="window.open('https://youtu.be/TpMQ_3JLJ2I', '_blank')",
                               align = "left")
           )
         )
