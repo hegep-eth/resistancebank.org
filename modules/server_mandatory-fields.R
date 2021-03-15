@@ -13,7 +13,7 @@
                                          seq(from = 1,
                                              to = input_number(),
                                              by = 1))),
-                                c(paste0(rep(x = "sample_type_",
+                                c(paste0(rep(x = "sample_origin_",
                                              times = input_number()),
                                          seq(from = 1,
                                              to = input_number(),
@@ -65,7 +65,7 @@
                                         sapply(X = 1:length(deleted_rows()),
                                                FUN = function(i) {
 
-                                                 paste0("sample_type_", deleted_rows()[i])
+                                                 paste0("sample_origin_", deleted_rows()[i])
 
                                                }),
                                         sapply(X = 1:length(deleted_rows()),
@@ -106,7 +106,7 @@
   })
 
   ###= Check that all the mandatory fields are filled
-  observe({
+  mandatory_filled <- reactive({
 
     mandatory_filled <- vapply(X = mandatory_fields(),
                                FUN = function(x) {
@@ -117,8 +117,14 @@
 
     mandatory_filled <- all(mandatory_filled)
 
+    return(mandatory_filled)
+
+  })
+
+  observe({
+
     toggleState(id = "submit",
-                condition = mandatory_filled &
+                condition = mandatory_filled() &
                             input_number() != 0 &
                             input_number() != length(deleted_rows()))
 

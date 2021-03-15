@@ -2,7 +2,7 @@
 p(tags$div(style = "text-align: justify;
                     padding-left: 5px;
                     padding-right: 5px;
-                    font-size: 1.195vmin;",
+                    font-size: 1.190vmin;",
            strong("What is Resistance bank?"), tags$br(),
            "Resistance bank is an online repository for point prevalence surveys on antimicrobial
            resistance (AMR) in animals, with a focus on low and middle-income countries. It is
@@ -21,7 +21,7 @@ p(tags$div(style = "text-align: justify;
                                                                                                 in Animals in Low- and Middle-Income Countries, Science 365, (2019)",
                                                                                                 href = "https://science.sciencemag.org/content/365/6459/eaaw1944",
                                                                                                 target = "_blank",
-                                                                                                .noWS = "outside"), ". The P50 map will be updated on a monthly basis.", tags$br(),
+                                                                                                .noWS = "outside"), ". The P50 map will be updated on a yearly basis.", tags$br(),
            " ", tags$br(),
            strong("Team"), tags$br(),
            "Resistance bank is manteined by the ", tags$a("Health Geography and Policy Group",
@@ -50,9 +50,13 @@ p(tags$div(style = "text-align: justify;
                                .noWS = "outside"),
            ". Our generous funders had no role in study design.", tags$br(),
            " ", tags$br(),
-           strong("Contact"), tags$br(),
-           a("thomasvanboeckel@resistancebank.org",
-             href = "mailto:thomasvanboeckel@resistancebank.org"), tags$br(),
+           strong("Open data license"), tags$br(),
+           "The database, maps, and country-reports available on Resistance bank are released under the ",
+           tags$a("Universal Creative Commons Zero (CC0)",
+                  href = "https://wiki.creativecommons.org/wiki/CC0_use_for_data",
+                  target = "_blank",
+                  .noWS = "outside"),
+           " public domain, which permits maximal use/re-use of data.", tags$br(),
            " ", tags$br(),
            strong("Disclaimer"), tags$br(),
            "The information on this platform result from the aggregation, and extrapolation of data from surveys conducted by independent scientists.
@@ -70,6 +74,14 @@ p(tags$div(style = "text-align: justify;
                   href = "https://fontawesome.com",
                   target = "_blank",
                   .noWS = "outside"), ", ",
+           tags$a("Ionicons",
+                  href = "https://ionicons.com",
+                  target = "_blank",
+                  .noWS = "outside"), ", ",
+           tags$a("VectorStock",
+                  href = "https://www.vectorstock.com",
+                  target = "_blank",
+                  .noWS = "outside"), ", ",
            tags$a("Pixabay",
                   href = "https://pixabay.com",
                   target = "_blank",
@@ -78,6 +90,10 @@ p(tags$div(style = "text-align: justify;
                   href = "https://pubchem.ncbi.nlm.nih.gov",
                   target = "_blank",
                   .noWS = "outside"),
-           ".", .noWS = c("after-begin", "before-end")
+           ".", .noWS = c("after-begin", "before-end"), tags$br(),
+           " ", tags$br(),
+           strong("Contact"), tags$br(),
+           a("thomasvanboeckel@resistancebank.org",
+             href = "mailto:thomasvanboeckel@resistancebank.org"), tags$br()
   )
 )
