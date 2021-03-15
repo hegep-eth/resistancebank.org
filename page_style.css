@@ -13,18 +13,6 @@
 
 
 
-
-.leaflet-control-layers{ 
-	background-color: white;
-    width: 140px;
-    height: 485px;
-    padding-top:45px;
-}
-
-
-
-
-
 .leaflet-popup-content {
   width: 1500px;
   /*z-index: 1500;*/
@@ -140,7 +128,11 @@
 
 #download_RESBANK2 {
 	border-width: 0px;
+	box-shadow: none!important;
+	outline: 0;
+	background-color: transparent;
 }
+
 
 
 
@@ -191,6 +183,13 @@
 
 
 /*##########========== Controls panel ==========##########*/
+.leaflet-control-layers{ 
+	background-color: white;
+    width: 140px;
+    height: 546px;
+    padding-top:45px;
+}
+
 #controls_panel {
 	z-index: 1000;
 	background-color: transparent;
@@ -254,7 +253,8 @@
 	font-size: 12px;
 }
 
-#download_RESBANK {
+/*###= Filter data panel =###*/
+#display_filterdata_panel {
 	box-shadow: none!important;
     outline: 0;
 	background-color: transparent;
@@ -262,22 +262,80 @@
 	font-size: 12px;
 }
 
-#upload_resistancebank_template {
-	border-width: 0px;
-}
-
-#download_P50 {
+#close_filterdata_panel_controls {
 	box-shadow: none!important;
     outline: 0;
+	color: #C3C3C3;
 	background-color: transparent;
 	border-width: 0px;
 	font-size: 12px;
 }
 
-#display_summary_metrics_exposure {
-	background-color: transparent;
-	border-width: 0px;
-	font-size: 12px;
+#filterdata_panel {
+	background-color: white;
+  	padding: 20px 20px 20px 20px;
+  	margin: auto;
+  	border-radius: 5pt;
+  	box-shadow: 0pt 0pt 6pt 0px rgba(61,59,61,0.48);
+    padding-bottom: 2mm;
+    padding-top: 1mm;
+    z-index: 10000;
+    
+    /*opacity: 0.6;
+    transition: 0.3s;*/
+}
+
+#download_RESBANK_filtered {
+	background-color: #BBE2B4;
+	transition: 0.3s;
+}
+
+#download_RESBANK_filtered:hover {
+	background-color: #89BE8B;
+}
+
+#display_filtered_data {
+	background-color: #BBE2B4;
+	transition: 0.3s;
+}
+#display_filtered_data:hover {
+	background-color: #89BE8B;
+}
+
+#close_filterdata_panel {
+	box-shadow: none!important;
+    outline: 0;
+    color: #C3C3C3;
+    transition: color 100ms 100ms;
+}
+
+#close_filterdata_panel:hover {
+    color: #999999;
+    transition: 0.3s;
+}
+
+#show_filterdata_panel_inputs {
+	box-shadow: none!important;
+    outline: 0;
+    color: #C3C3C3;
+    transition: color 100ms 100ms;
+}
+
+#show_filterdata_panel_inputs:hover {
+    color: #999999;
+    transition: 0.3s;
+}
+
+#hide_filterdata_panel_inputs {
+	box-shadow: none!important;
+    outline: 0;
+    color: #C3C3C3;
+    transition: color 100ms 100ms;
+}
+
+#hide_filterdata_panel_inputs:hover {
+    color: #999999;
+    transition: 0.3s;
 }
 
 /*###= Country report panel =###*/
@@ -310,7 +368,21 @@
 }
 
 #download_Country_report {
-	border-width: 0px;
+	background-color: #BBE2B4;
+	transition: 0.3s;
+}
+
+#download_Country_report:hover {
+	background-color: #89BE8B;
+}
+
+#download_Country_data {
+	background-color: #BBE2B4;
+	transition: 0.3s;
+}
+
+#download_Country_data:hover {
+	background-color: #89BE8B;
 }
 
 #close_country_report_panel {
@@ -322,7 +394,37 @@
 
 #close_country_report_panel:hover {
     color: #999999;
-    transition-delay: 0;
+    transition: 0.3s;
+}
+
+/*###= Download buttons =###*/
+#download_RESBANK {
+	box-shadow: none!important;
+    outline: 0;
+	background-color: transparent;
+	border-width: 0px;
+	font-size: 12px;
+}
+
+#upload_resistancebank_template {
+	box-shadow: none!important;
+	outline: 0;
+	background-color: transparent;
+    border-width: 0px;
+}
+
+#download_P50 {
+	box-shadow: none!important;
+    outline: 0;
+	background-color: transparent;
+	border-width: 0px;
+	font-size: 12px;
+}
+
+#display_summary_metrics_exposure {
+	background-color: transparent;
+	border-width: 0px;
+	font-size: 12px;
 }
 
 /*###= About panel =###*/
@@ -364,7 +466,49 @@
 
 #close_about_panel:hover {
     color: #999999;
-    transition-delay: 0;
+    transition: 0.3s;
+}
+
+/*###= Limitations panel =###*/
+#display_limitations_panel {
+	box-shadow: none!important;
+    outline: 0;
+	background-color: transparent;
+	border-width: 0px;
+	font-size: 12px;
+}
+
+#close_limitations_panel_controls {
+	box-shadow: none!important;
+    outline: 0;
+	color: #C3C3C3;
+	background-color: transparent;
+	border-width: 0px;
+	font-size: 12px;
+}
+
+#limitations_panel {
+	background-color: white;
+  	padding: 5px 5px 5px 5px;
+  	margin: auto;
+  	border-radius: 5pt;
+  	border-width: 0px;
+  	box-shadow: 0pt 0pt 6pt 0px rgba(61,59,61,0.48);
+    padding-bottom: 2mm;
+    padding-top: 1mm;
+    z-index: 20000;
+}
+
+#close_limitations_panel {
+	box-shadow: none!important;
+    outline: 0;
+    color: #C3C3C3;
+    transition: color 100ms 100ms;
+}
+
+#close_limitations_panel:hover {
+    color: #999999;
+    transition: 0.3s;
 }
 
 /*###= GitHub repository =###*/
@@ -390,6 +534,7 @@
 
 
 /*##########========== Form ==========##########*/
+
 #form_panel {
 /*Appearence*/
 	background-color: white;
@@ -418,7 +563,7 @@
 
 #close_form:hover {
 	color: #999999;
-    transition-delay: 0;
+    transition: 0.3s;
 }
 
 .mandatory_star {
