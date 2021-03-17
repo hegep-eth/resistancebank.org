@@ -13,15 +13,16 @@ ui <- fluidPage(
 
   tags$head(includeCSS("page_style.css")),
 
-  ###= General style for every widget
-  tags$style(".selectize-control.single .selectize-input:after {right: 0px; margin-right: 3px;}"),
+  # 1.1 #####===== General style for every widget =====#####
   tags$style(".popover {max-width: 650px;}"),
+  tags$style(".selectize-control.single .selectize-input:after {right: 0px; margin-right: 3px;}"),
   tags$style(".selectize-input {min-height: 0px; height: 20px; padding: 0px 0px 20px 5px; font-size: 10px; margin-top: 7px; text-align: left;}"),
   tags$style(".selectize-dropdown {font-size: 10px; text-align: left;}"),
   tags$head(tags$style(HTML(".shiny-split-layout > div {overflow: visible;}"))),
   tags$head(tags$style(HTML(".form-group, .selectize-control {margin-bottom: 0px;} .box-body {padding-bottom: 0px;}"))),
   tags$head(tags$style(HTML(".newfileinput {width: 0.1px; height: 0.1px; opacity: 0; overflow: hidden; position: absolute; z-index: -1;}"))),
   tags$head(tags$style(HTML("#initial_map_view_div .tooltip {width: 145px;}"))),
+  tags$head(tags$style(HTML(".shiny-input-container > label {margin-bottom: -30px;}"))),
   tags$head(
     tags$style(
       HTML("
@@ -36,16 +37,23 @@ ui <- fluidPage(
         #coordinates {height: 22px; margin-top: 7px; font-size: 10px; padding: 0px 0px 0px 5px;}
         #coordinates::placeholder {color: #DEDEDE;}
         #remark {height: 22px; margin-top: 7px; font-size: 10px; padding: 0px 0px 0px 5px;}
-        #remark::placeholder {color: #DEDEDE;}"))),
-
-  HTML('<meta name="viewport" content="width=1024">'),
+        #remark::placeholder {color: #DEDEDE;}
+        #filterdata_ISO3+ div>.selectize-input{height: 55px !important}
+        #filterdata_species+ div>.selectize-input{height: 55px !important}
+        #filterdata_sample_origin+ div>.selectize-input{height: 55px !important}
+        #filterdata_pathogen+ div>.selectize-input{height: 55px !important}
+        #filterdata_compound+ div>.selectize-input{height: 55px !important}
+        #filterdata_compound_class+ div>.selectize-input{height: 55px !important}
+        #filterdata_compound_class+ .selectize-control.single .selectize-input:after{content: none;}
+        #filterdata_compound_agisar+ div>.selectize-input{height: 55px !important}"))),
 
   # 2. ##########========== WORLD MAP ==========##########
   div(id = "map",
 
-                 leafletOutput(outputId = "world_map",
-                               width = "100%",
-                               height = "100%"), # percentage height can be set thanks to the .css file
+      leafletOutput(outputId = "world_map",
+                   width = "100%",
+                   height = "100%"), # percentage height can be set thanks to the .css file
+
   hidden(
     absolutePanel(id = "name_Maps_panel",
                   fixed = TRUE,
@@ -71,7 +79,7 @@ ui <- fluidPage(
                   clearableTextInput(inputId = "target",
                                      label = NULL,
                                      value = "",
-                                     placeholder = "Country, city, address, or latitude and longitude.")
+                                     placeholder = "Country, city, address, or latitude and longitude")
     )
   ),
 
@@ -131,7 +139,6 @@ ui <- fluidPage(
                                         background-color: rgba(0, 0, 0, 0);
                                         border-width: 0px;
                                         padding: 0px 5px 0px 0px;"),
-                                        # font-size: 1.5vmin;
 
     tags$div(style = "height: 3px;"),
 
@@ -147,41 +154,57 @@ ui <- fluidPage(
 
     tags$div(style = "height: 32px;"),
 
-                  fluidRow(
-                    column(width = 4,
-                           align = "center",
-                           actionButton(inputId = "explore_amr_map",
-                                        label = tags$img(src = "world_icon.png",
-                                                         width = "96%",
-                                                         height = "95%",
-                                                         align = "center")),
-                           tags$p(strong("Maps of antimicrobial resistance"),
-                                  style = "font-size: 1.3vmin;
-                                           text-align: center;"),
-                    ),
-                    column(width = 4,
-                           align = "center",
-                           actionButton(inputId = "add_your_survey1",
-                                        label = tags$img(src = "location-map_icon2.png",
-                                                         height = "45%",
-                                                         width = "45%",
-                                                         align = "center")),
-                           tags$p(strong("Add your survey"),
-                                  style = "font-size: 1.3vmin;
-                                           text-align: center;"),
-                    ),
-                    column(width = 4,
-                           align = "center",
-                           NEWdownloadButton(outputId = "download_RESBANK2",
-                                             label = tags$img(src = "download_icon.png",
-                                                              height = "54%",
-                                                              width = "54%",
-                                                              align = "center")),
-                           tags$p(strong("Download antimicrobial resistance data"),
-                                  style = "font-size: 1.3vmin;
-                                           text-align: center;")
-
-                    )
+                  tags$table(style = "width: 100%;",
+                             tags$tr(tags$td(style = "width: 33.3%;",
+                                             align = "center",
+                                             actionButton(inputId = "explore_amr_map",
+                                                          label = tags$img(src = "world_icon.png",
+                                                                           width = "96%",
+                                                                           height = "95%",
+                                                                           align = "center"),
+                                                          style = "box-shadow: none!important;
+                                                                   outline: 0;
+                                                                   background-color: transparent;")
+                                    ),
+                                    tags$td(style = "width: 33.3%;",
+                                            align = "center",
+                                            actionButton(inputId = "add_your_survey1",
+                                                         label = tags$img(src = "location-map_icon2.png",
+                                                                          height = "45%",
+                                                                          width = "45%",
+                                                                          align = "center"),
+                                                         style = "box-shadow: none!important;
+                                                                  outline: 0;
+                                                                  background-color: transparent;")
+                                    ),
+                                    tags$td(style = "width: 33.3%;",
+                                              align = "center",
+                                              NEWdownloadButton(outputId = "download_RESBANK2",
+                                                                label = tags$img(src = "download_icon.png",
+                                                                                 height = "54%",
+                                                                                 width = "54%",
+                                                                                 align = "center"))
+                                    )
+                             ),
+                             tags$tr(tags$td(style = "width: 33.3%;",
+                                             align = "center",
+                                             tags$p(strong("Maps of antimicrobial resistance"),
+                                                    style = "font-size: 1.3vmin;
+                                                             text-align: center;")
+                                     ),
+                                     tags$td(style = "width: 33.3%;",
+                                             align = "center",
+                                             tags$p(strong("Add your survey"),
+                                                    style = "font-size: 1.3vmin;
+                                                             text-align: center;")
+                                     ),
+                                     tags$td(style = "width: 33.3%;",
+                                             align = "center",
+                                             tags$p(strong("Download antimicrobial resistance data"),
+                                                    style = "font-size: 1.3vmin;
+                                                             text-align: center;")
+                                     )
+                             )
                   )
       )
 
@@ -198,6 +221,7 @@ ui <- fluidPage(
                   bottom = "auto",
                   width = 142,
                   height = "auto",
+
         fluidRow(
           column(width = 12,
                  align = "left",
@@ -226,6 +250,22 @@ ui <- fluidPage(
                              align = "left")
   ),
 
+                 actionButton(inputId = "display_filterdata_panel",
+                              label = div(icon(name = "filter",
+                                               lib = "font-awesome"),
+                                          strong("Filter data")),
+                              align = "left"),
+
+  hidden(
+
+                  actionButton(inputId = "close_filterdata_panel_controls",
+                               label = div(icon(name = "filter",
+                                                lib = "font-awesome"),
+                                           strong("Remove filter")),
+                               align = "left")
+
+  ),
+
                  actionButton(inputId = "display_Country_report_panel",
                               label = div(icon(name = "file-contract",
                                                lib = "font-awesome"),
@@ -238,19 +278,20 @@ ui <- fluidPage(
                                                lib = "font-awesome"),
                                           strong("Country report")),
                               align = "left")
+
   ),
 
 br(),
 
-                 downloadButton(outputId = "download_RESBANK",
-                                label = strong("Resistance bank"),
-                                align = "left"),
+                   downloadButton(outputId = "download_RESBANK",
+                                  label = strong("Resistance bank"),
+                                  align = "left"),
 
 br(),
 
-                 downloadButton(outputId = "download_P50",
-                                label = strong("AMR hotspots map"),
-                                align = "left"),
+                   downloadButton(outputId = "download_P50",
+                                  label = strong("AMR hotspots map"),
+                                  align = "left"),
 
 br(),
 br(),
@@ -272,6 +313,21 @@ br(),
                                           strong("About")),
                               align = "left")
   ),
+
+                actionButton(inputId = "display_limitations_panel",
+                             label = div(icon(name = "exclamation-triangle",
+                                              lib = "font-awesome"),
+                                         strong("Limitations")),
+                             align = "left"),
+
+  hidden(
+                actionButton(inputId = "close_limitations_panel_controls",
+                             label = div(icon(name = "exclamation-triangle",
+                                              lib = "font-awesome"),
+                                         strong("Limitations")),
+                             align = "left")
+  ),
+
                  actionButton(inputId = "open_GitHub_repository",
                               label = div(icon(name = "github",
                                                lib = "font-awesome"),
@@ -316,52 +372,58 @@ br(),
 
   tags$div(style = "height: 20px;"),
 
-                      fluidRow(
-                        column(width = 4,
-                               actionButton(inputId = "fill_form",
-                                            label = img(src = "form.png",
-                                                        height = "85.5%",
-                                                        width = "85.5%",
-                                                        align = "center"),
-                                            style = "border-width: 0px;"),
-                               tags$p(strong("Fill a form"),
-                                      style = "font-size: 1.17vmin;
-                                               text-align: center;")
-                        ),
-                        column(width = 4,
-                               align = "center",
-                               NEWfileInput(inputId = "upload_resistancebank_template",
-                                            label = tags$img(src = "upload_template.png",
-                                                             height = "81.3%",
-                                                             width = "81.3%",
-                                                             align = "center"),
-                                            labelIcon = NULL,
-                                            accept = c(".xlsx"),
-                                            progress = FALSE,
-                                            style = "border-width: 0px;"),
-                               tags$div(style = "display: inline-block;
-                                                 vertical-align: top;
-                                                 font-size: 1.17vmin;",
-                                        strong("Use this ")),
-                               downloadLink(outputId = "download_resistancebank_template",
-                                            label = tags$strong(".xlsx template",
-                                                                style = "vertical-align: top;
-                                                                         font-size: 1.17vmin;")) #! After resizing window there is too much space between two lines
-                        ),
-                        column(width = 4,
-                               a(actionButton(inputId = "contact_us_for_survey",
-                                              label = img(src = "contact_us.png",
-                                                        height = "85.5%",
-                                                        width = "85.5%",
-                                                        align = "center"),
-                                              style = "border-width: 0px;"),
-                                 href = "mailto:thomasvanboeckel@resistancebank.org"),
-                               tags$p(strong("Contact us"),
-                                      style = "font-size: 1.17vmin;
-                                               text-align: center;")
-                        )
+                      tags$table(style = "width: 100%",
+                                 tags$tr(tags$td(style = "width: 33.3%;",
+                                                 align = "center",
+                                                 actionButton(inputId = "fill_form",
+                                                              label = img(src = "form.png",
+                                                                          height = "85.5%",
+                                                                          width = "85.5%",
+                                                                          align = "center"),
+                                                              style = "border-width: 0px;
+                                                                       box-shadow: none!important;
+                                                                       outline: 0;
+                                                                       background-color: transparent;")
+                                         ),
+                                         tags$td(style = "width: 33.3%;",
+                                                 align = "center",
+                                                 NEWfileInput(inputId = "upload_resistancebank_template",
+                                                              label = tags$img(src = "upload_template.png",
+                                                                               height = "81.3%",
+                                                                               width = "81.3%",
+                                                                               align = "center"),
+                                                              labelIcon = NULL,
+                                                              accept = c(".xlsx"),
+                                                              progress = FALSE)
+                                         ),
+                                         tags$td(style = "width: 33.3%;",
+                                                 align = "center",
+                                                 a(actionButton(inputId = "contact_us_for_survey",
+                                                                label = img(src = "contact_us.png",
+                                                                            height = "85.5%",
+                                                                            width = "85.5%",
+                                                                            align = "center"),
+                                                                style = "border-width: 0px;
+                                                                         box-shadow: none!important;
+                                                                         outline: 0;
+                                                                         background-color: transparent;"),
+                                                   href = "mailto:thomasvanboeckel@resistancebank.org")
+                                         )
+                                 ),
+                                 tags$tr(tags$td(style = "width: 33.3%",
+                                                 align = "center",
+                                                 h5("Fill a form")
+                                         ),
+                                         tags$td(style = "width: 33.3%",
+                                                 align = "center",
+                                                 h5(HTML('Use this <a href="https://amr-hegep-bucket.s3.eu-central-1.amazonaws.com/Downloads/resistancebank_template.zip" download>.xslx template</a>'))
+                                         ),
+                                         tags$td(style = "width: 33.3%",
+                                                 align = "center",
+                                                 h5("Contact us")
+                                         )
+                                 )
                       )
-
         )
 
     )
@@ -371,7 +433,7 @@ br(),
   # 3.3.1 ###= Form panel =#####
   hidden(
 
-  div(id = "form",
+  tags$div(id = "form",
 
       absolutePanel(id = "form_panel", ###!!!!!! ricordati che deve essere lo stesso su ogni schermo!!!
                     fixed = TRUE,
@@ -384,7 +446,7 @@ br(),
 
                     actionButton(inputId = "close_form",
                                  label = icon(name = "times",
-                                              lib = "font-awesome"), # fixed !!!! ! ! ! !!!! ! !!! ! ### #  #à## ##!!
+                                              lib = "font-awesome"),
                                  style = "position: absolute;
                                           top: 0;
                                           right: 0;
@@ -396,31 +458,28 @@ br(),
   # 3.3.1.1 ###= User information =#####
                   fluidRow(
                     column(width = 6,
-                           actionButton(inputId = "show_user_information_panel",
-                                        label = icon(name = "plus",
-                                                     class = "plus_investigator",
-                                                     lib = "font-awesome"),
-                                        style = "border-radius: 50%; border: 1.5px solid #2D2D2D; background-color:#2D2D2D; padding: 0.5px 3px 0.5px 3px; margin-bottom: 7px; font-size: 65%;"),
-                           tags$style(".plus_investigator {color: #FFFFFF;}"),
                            hidden(
+                             actionButton(inputId = "show_user_information_panel",
+                                          label = icon(name = "plus",
+                                                       class = "plus_investigator",
+                                                       lib = "font-awesome"),
+                                          style = "border-radius: 50%; border: 1.5px solid #2D2D2D; background-color:#2D2D2D; padding: 0.5px 3px 0.5px 3px; margin-bottom: 7px; font-size: 65%;"),
+                             tags$style(".plus_investigator {color: #FFFFFF;}")
+                           ),
                              actionButton(inputId = "hide_user_information_panel",
                                           label = icon(name = "minus",
                                                        class = "minus_investigator",
                                                        lib = "font-awesome"),
                                           style = "border-radius: 50%; border: 1.5px solid #2D2D2D; background-color:#2D2D2D; padding: 0.5px 3px 0.5px 3px; margin-bottom: 7px; font-size: 65%;"),
-                             tags$style(".minus_investigator {color: #FFFFFF;}")
-                           ),
-                           div(style = "display: inline-block; margin-left: 5px;",
-                               h3(strong(" Investigator")))
+                             tags$style(".minus_investigator {color: #FFFFFF;}"),
+                             div(style = "display: inline-block; margin-left: 5px;",
+                                 h3(strong(" Investigator")))
                     )
                   ),
-
-  hidden(
 
   div(id = "user_information_panel",
 
                   fluidRow(
-                    br(),
                     column(width = 2,
                            textInput(inputId = "author_name",
                                      label = h6(mandatory_asterisk("First name")),
@@ -442,8 +501,6 @@ br(),
                                      value = "")
                     )
                   )
-  )
-
   ),
 
 br(),
@@ -451,117 +508,140 @@ br(),
   # 3.3.1.2 ###= Survey information =#####
                   fluidRow(
                     column(width = 6,
-                           actionButton(inputId = "show_study_information_panel",
-                                        label = icon(name = "plus",
-                                                     class = "plus_study_information",
-                                                     lib = "font-awesome"),
-                                        style = "border-radius: 50%; border: 1.5px solid #2D2D2D; background-color:#2D2D2D; padding: 0.5px 3px 0.5px 3px; margin-bottom: 7px; font-size: 65%;"),
-                           tags$style(".plus_study_information {color: #FFFFFF;}"),
-  hidden(
+                           hidden(
+                             actionButton(inputId = "show_study_information_panel",
+                                          label = icon(name = "plus",
+                                                       class = "plus_study_information",
+                                                       lib = "font-awesome"),
+                                          style = "border-radius: 50%; border: 1.5px solid #2D2D2D; background-color:#2D2D2D; padding: 0.5px 3px 0.5px 3px; margin-bottom: 7px; font-size: 65%;"),
+                             tags$style(".plus_study_information {color: #FFFFFF;}")
+                           ),
                              actionButton(inputId = "hide_study_information_panel",
                                           label = icon(name = "minus",
                                                        class = "minus_study_information",
                                                        lib = "font-awesome"),
                                           style = "border-radius: 50%; border: 1.5px solid #2D2D2D; background-color:#2D2D2D; padding: 0.5px 3px 0.5px 3px; margin-bottom: 7px; font-size: 65%;"),
-                             tags$style(".minus_study_information {color: #FFFFFF;}")
-  ),
-  div(style = "display: inline-block; margin-left: 5px;",
-      h3(strong(" Survey information")))
-  )
+                             tags$style(".minus_study_information {color: #FFFFFF;}"),
+                             div(style = "display: inline-block; margin-left: 5px;",
+                                 h3(strong(" Survey information")))
+                    )
                   ),
 
-  hidden(
-
-  div(id = "study_information_panel",
+    tags$div(id = "study_information_panel",
   # DOI
-                  fluidRow(
-                    br(),
-                    column(width = 2,
-                           textInput(inputId = "doi",
-                                     label = h6("Digital Object Identifier"),
-                                     placeholder = "10.1126/science.aao1495",
-                                     value = "")
-                    ),
+             tags$table(style = "width: 100%;
+                                 table-layout: fixed;",
+                        tags$tr(tags$td(style = "width: 14.28%;",
+                                        align = "left",
+                                        textInput(inputId = "doi",
+                                                  label = h6("Digital Object Identifier"),
+                                                  placeholder = "10.1126/science.aao1495",
+                                                  value = "",
+                                                  width = "95%")
+                                ),
   # PUBLICATION YEAR
-                    column(width = 2,
-                           selectizeInput(inputId = "PubDate",
-                                          label = h6("Publication year"),
-                                          choices = "",
-                                          selected = "",
-                                          multiple = FALSE,
-                                          options = list(create = FALSE))
-                    ),
+                                tags$td(style = "width: 14.28%;",
+                                        align = "left",
+                                        selectizeInput(inputId = "PubDate",
+                                                       label = h6("Publication year"),
+                                                       choices = "",
+                                                       selected = "",
+                                                       multiple = FALSE,
+                                                       width = "95%",
+                                                       options = list(maxItems = 1,
+                                                                      create = FALSE,
+                                                                      closeAfterSelect = TRUE))
+                                ),
  # Study Title
-                    column(width = 2,
-                           textInput(inputId = "paper_title",
-                                     label = h6("Title"),
-                                     value = "")
-                    ),
+                                tags$td(style = "width: 14.28%;",
+                                        align = "left",
+                                        textInput(inputId = "paper_title",
+                                                  label = h6("Title"),
+                                                  value = "",
+                                                  width = "95%")
+                                ),
   # Study Journal
-                    column(width = 2,
-                           textInput(inputId = "journal",
-                                     label = h6("Journal"),
-                                     value = "")
-                    ),
+                                tags$td(style = "width: 14.28%;",
+                                        align = "left",
+                                        textInput(inputId = "journal",
+                                                  label = h6("Journal"),
+                                                  value = "",
+                                                  width = "95%")
+                                ),
  # Country of study
-                    column(width = 2,
-                           selectizeInput(inputId = "country_study",
-                                          label = h6(mandatory_asterisk("Country")),
-                                          choices = c("China (CHN)" = "",
-                                                      Countries$Country_ISO3),
-                                          selected = "",
-                                          multiple = TRUE,
-                                          options = list(maxItems = 1,
-                                                         create = FALSE,
-                                                         closeAfterSelect = FALSE))
-                    ),
+                                tags$td(style = "width: 14.28%;",
+                                        align = "left",
+                                        selectizeInput(inputId = "country_study",
+                                                       label = h6(mandatory_asterisk("Country")),
+                                                       choices = c("China" = "",
+                                                                   countries_list),
+                                                       selected = "",
+                                                       multiple = TRUE,
+                                                       width = "95%",
+                                                       options = list(maxItems = 1,
+                                                                      create = FALSE,
+                                                                      closeAfterSelect = TRUE))
+                                ),
  # Coordinates
-                    column(width = 2,
-                           textInput(inputId = "coordinates",
-                                     label = h6(mandatory_asterisk("Location")),
-                                     value = "",
-                                     placeholder = "Place name or latitude/longitude")
-                    )
+                                tags$td(style = "width: 14.28%;",
+                                        align = "left",
+                                        textInput(inputId = "coordinates",
+                                                  label = h6(mandatory_asterisk("Location")),
+                                                  value = "",
+                                                  placeholder = "Place name or latitude/longitude",
+                                                  width = "95%")
+                                ),
+ # Sampling scheme
+                                tags$td(style = "width: 14.28%;",
+                                        align = "left",
+                                        selectizeInput(inputId = "sampling_scheme",
+                                                       label = h6("Sampling scheme"),
+                                                       choices = c("Routine" = "",
+                                                                   "Longitudinal study",
+                                                                   "Mandated study",
+                                                                   "One-time research survey",
+                                                                   "Routine"),
+                                                       selected = "",
+                                                       multiple = FALSE,
+                                                       width = "95%",
+                                                       options = list(maxItems = 1,
+                                                                      create = FALSE,
+                                                                      closeAfterSelect = TRUE))
+                                )
                   )
-
-  )
-
-  ),
+           )
+    ),
 
 br(),
 
   # 3.3.1.3 ###= Antimicrobial resistance =#####
                   fluidRow(
                     column(width = 6,
-                           actionButton(inputId = "show_amr_panel",
-                                        label = icon(name = "plus",
-                                                     class = "plus_antimicrobial_resistance",
-                                                     lib = "font-awesome"),
-                                        style = "border-radius: 50%; border: 1.5px solid #2D2D2D; background-color:#2D2D2D; padding: 0.5px 3px 0.5px 3px; margin-bottom: 7px; font-size: 65%;"),
-                           tags$style(".plus_antimicrobial_resistance {color: #FFFFFF;}"),
-  hidden(
+                           hidden(
+                             actionButton(inputId = "show_amr_panel",
+                                          label = icon(name = "plus",
+                                                       class = "plus_antimicrobial_resistance",
+                                                       lib = "font-awesome"),
+                                          style = "border-radius: 50%; border: 1.5px solid #2D2D2D; background-color:#2D2D2D; padding: 0.5px 3px 0.5px 3px; margin-bottom: 7px; font-size: 65%;"),
+                             tags$style(".plus_antimicrobial_resistance {color: #FFFFFF;}")
+                           ),
                              actionButton(inputId = "hide_amr_panel",
                                           label = icon(name = "minus",
                                                        class = "minus_antimicrobial_resistance",
                                                        lib = "font-awesome"),
                                           style = "border-radius: 50%; border: 1.5px solid #2D2D2D; background-color:#2D2D2D; padding: 0.5px 3px 0.5px 3px; margin-bottom: 7px; font-size: 65%;"),
-                             tags$style(".minus_antimicrobial_resistance {color: #FFFFFF;}")
-  ),
-                           div(style = "display: inline-block; margin-left: 5px;",
-                               h3(strong(" Antimicrobial resistance")))
+                             tags$style(".minus_antimicrobial_resistance {color: #FFFFFF;}"),
+                             div(style = "display: inline-block; margin-left: 5px;",
+                                 h3(strong(" Antimicrobial resistance")))
                     )
                   ),
 
-  hidden(
-
     source(file = "modules/ui_antimicrobial-resistance-form.R",
-           local = TRUE)$value
-
-  ),
+           local = TRUE)$value,
 
 br(),
 
-  # 3.3.1.3 ###= Remark =#####
+  # 3.3.1.4 ###= Comments =#####
                       fluidRow(
                         column(width = 6,
                                actionButton(inputId = "show_remark_panel",
@@ -602,7 +682,7 @@ br(),
 br(),
 br(),
 
-  # 3.3.1.4 ###= Submit =#####
+  # 3.3.1.5 ###= Submit =#####
                       fluidRow(id = "submit_button",
                         column(width = 12,
                                align = "center",
@@ -616,7 +696,238 @@ br(),
     )
   ),
 
-  # 3.4 #####===== Country report panel =====#####
+  # 3.4 #####===== Filter data panel =====#####
+  hidden(
+
+    absolutePanel(id = "filterdata_panel",
+                  fixed = TRUE,
+                  draggable = FALSE,
+                  top = 11,
+                  right = 160,
+                  left = "auto",
+                  bottom = "auto",
+                  width = "48%",
+                  height = "auto",
+
+                  tags$p(".",
+                          style = "color: white;"),
+
+    hidden(
+
+                  actionButton(inputId = "show_filterdata_panel_inputs",
+                               label = icon(name = "plus",
+                                            lib = "font-awesome"),
+                               style = "position: absolute;
+                                        top: 0;
+                                        right: 0;
+                                        background-color: rgba(0, 0, 0, 0);
+                                        border-width: 0px;
+                                        padding: 0px 30px 0px 0px;")
+    ),
+
+                  actionButton(inputId = "hide_filterdata_panel_inputs",
+                               label = icon(name = "minus",
+                                            lib = "font-awesome"),
+                               style = "position: absolute;
+                                        top: 0;
+                                        right: 0;
+                                        background-color: rgba(0, 0, 0, 0);;
+                                        border-width: 0px;
+                                        padding: 0px 30px 40px 0px;"),
+
+                  actionButton(inputId = "close_filterdata_panel",
+                               label = icon(name = "times",
+                                            lib = "font-awesome"),
+                               style = "position: absolute;
+                                        top: 0;
+                                        right: 0;
+                                        background-color: rgba(0, 0, 0, 0);
+                                        border-width: 0px;
+                                        padding: 0px 5px 0px 0px;"),
+
+                  tags$div(id = "filterdata_panel_inputs",
+
+                           tags$table(style = "width: 100%;",
+                                      tags$tr(tags$td(style = "width: 10%;",
+                                                      align = "center",
+                                                      img(src = "filter-figures/world-americas.png",
+                                                          width = "75%")
+                                              ),
+                                              tags$td(style = "width: 40%;",
+                                                      align = "left",
+                                                      selectizeInput(inputId = "filterdata_ISO3",
+                                                                     label = h5("Countries"),
+                                                                     choices = c("India" = "",
+                                                                                 as.list(setNames(object = Countries_PPS$ISO3,
+                                                                                                  nm = Countries_PPS$Country))),
+                                                                     selected = "",
+                                                                     multiple = TRUE,
+                                                                     width = "94%",
+                                                                     options = list(create = FALSE,
+                                                                                    closeAfterSelect = FALSE))
+                                              ),
+                                              tags$td(style = "width: 10%;",
+                                                      align = "center",
+                                                      tags$img(src = "filter-figures/compound.png",
+                                                               width = "75%")
+                                              ),
+                                              tags$td(style = "width: 40%;",
+                                                      align = "left",
+                                                      selectizeInput(inputId = "filterdata_compound",
+                                                                     label = h5("Antibiotics"),
+                                                                     choices = c("Penicillin" = "",
+                                                                                 lapply(X = Antibiotics_list,
+                                                                                        FUN = function(i) {
+
+                                                                                          i[-c(1, 3, 4, 5, 6, 7, 8)]
+
+                                                                                        })),
+                                                                     selected = "",
+                                                                     multiple = TRUE,
+                                                                     width = "94%",
+                                                                     options = list(create = FALSE,
+                                                                                    closeAfterSelect = FALSE))
+                                              )
+                                      ),
+                                      tags$tr(tags$td(style = "width: 10%;
+                                                               padding-top: 10px;",
+                                                      align = "center",
+                                                      img(src = "filter-figures/species.png",
+                                                          width = "75%")
+                                              ),
+                                              tags$td(style = "width: 40%;
+                                                               padding-top: 10px;",
+                                                      align = "left",
+                                                      selectizeInput(inputId = "filterdata_species",
+                                                                     label = h5("Species"),
+                                                                     choices = c("Chicken" = "",
+                                                                                 sort(unique(resistancebank$Species))),
+                                                                     selected = "",
+                                                                     multiple = TRUE,
+                                                                     width = "94%",
+                                                                     options = list(create = FALSE,
+                                                                                    closeAfterSelect = FALSE))
+                                              ),
+                                              tags$td(style = "width: 10%
+                                                               padding-top: 10px;",
+                                                      align = "center",
+                                                      img(src = "filter-figures/compound_class.png",
+                                                          width = "75%")
+                                              ),
+                                              tags$td(style = "width: 40%;
+                                                               padding-top: 10px;",
+                                                      align = "left",
+                                                      selectizeInput(inputId = "filterdata_compound_class",
+                                                                     label = h5("Antibiotics class (WHO)"),
+                                                                     choices = c(sort(unique(resistancebank$Class_WHO[resistancebank$Class_WHO != "NA (NA)"]))),
+                                                                     selected = NULL,
+                                                                     multiple = TRUE,
+                                                                     width = "94%",
+                                                                     options = list(placeholder = "3rd Generation Cephalosporin (Critically important)",
+                                                                                    create = FALSE,
+                                                                                    closeAfterSelect = TRUE,
+                                                                                    maxItems = 1))
+                                              )
+                                      ),
+                                      tags$tr(tags$td(style = "width: 10%;
+                                                               padding-top: 10px;",
+                                                      align = "center",
+                                                      img(src = "filter-figures/sample_origin.png",
+                                                          width = "75%")
+                                              ),
+                                              tags$td(style = "width: 40%;
+                                                               padding-top: 10px;",
+                                                      align = "left",
+                                                      selectizeInput(inputId = "filterdata_sample_origin",
+                                                                     label = h5("Samples origin"),
+                                                                     choices = list("Food products" = "",
+                                                                                    "Fecal" = "Environment",
+                                                                                    "Food products" = "Product",
+                                                                                    "Live animal" = "LivingAnimal",
+                                                                                    "Slaughtered" = "KilledAnimal"),
+                                                                     selected = "",
+                                                                     multiple = TRUE,
+                                                                     width = "94%",
+                                                                     options = list(create = FALSE,
+                                                                                    closeAfterSelect = FALSE))
+
+                                              ),
+                                              tags$td(style = "width: 10%;
+                                                               padding-top: 10px;",
+                                                      align = "center",
+                                                      img(src = "filter-figures/compound_agisar.png",
+                                                          width = "75%")
+                                              ),
+                                              tags$td(style = "width: 40%;
+                                                               padding-top: 10px;",
+                                                      align = "left",
+                                                      selectizeInput(inputId = "filterdata_compound_agisar",
+                                                                     label = h5("AGISAR combination"),
+                                                                     choices = c("E. coli - Tetracycline" = "",
+                                                                                 sort(unique(resistancebank_amr$pathogen_compound))),
+                                                                     selected = "",
+                                                                     multiple = TRUE,
+                                                                     width = "94%",
+                                                                     options = list(create = FALSE,
+                                                                                    closeAfterSelect = FALSE)))
+                                      ),
+                                      tags$tr(tags$td(style = "width: 10%;
+                                                               padding-top: 10px;",
+                                                      align = "center",
+                                                      img(src = "filter-figures/pathogen.png",
+                                                          width = "75%")
+                                              ),
+                                              tags$td(style = "width: 40%;
+                                                               padding-top: 10px;",
+                                                      align = "left",
+                                                      selectizeInput(inputId = "filterdata_pathogen",
+                                                                     label = h5("Pathogens"),
+                                                                     choices = c("E. coli" = "",
+                                                                                 if ("Enterococcus" %in% unique(sort(resistancebank$Pathogens))) {
+
+                                                                                   setNames(object = as.list(unique(sort(resistancebank$Pathogens))),
+                                                                                            nm = c("Campylobacter spp.",
+                                                                                                   "E. coli",
+                                                                                                   "Enterococcus spp.",
+                                                                                                   "S. aureus",
+                                                                                                   "Salmonella spp. (non-typhoidal)"))
+
+                                                                                 } else {
+
+                                                                                   setNames(object = as.list(unique(sort(resistancebank$Pathogens))),
+                                                                                            nm = c("Campylobacter spp.",
+                                                                                                   "E. coli",
+                                                                                                   "S. aureus",
+                                                                                                   "Salmonella spp. (non-typhoidal)"))
+
+                                                                                 }),
+                                                                     selected = "",
+                                                                     multiple = TRUE,
+                                                                     width = "94%",
+                                                                     options = list(create = FALSE,
+                                                                                    closeAfterSelect = FALSE))
+                                              ),
+                                              tags$td(colspan = 2,
+                                                      style = "width: 50%;",
+                                                      uiOutput(outputId = "filterdata_buttons_and_info")
+                                              )
+                                      )
+                            ),
+
+tags$br(),
+
+                            fluidRow(
+                              column(width = 12,
+                                     DT::dataTableOutput(outputId = "filterdata_papers",
+                                                         width = "100%")
+                              )
+                            )
+                )
+    )
+
+  ),
+
+  # 3.5 #####===== Country report panel =====#####
   hidden(
 
     absolutePanel(id = "download_Country_report_panel",
@@ -633,50 +944,52 @@ br(),
                                label = icon(name = "times",
                                             lib = "font-awesome"),
                                style = "position: absolute;
-                                            top: 0;
-                                            right: 0;
-                                            background-color: rgba(0, 0, 0, 0);
-                                            border-width: 0px;
-                                            padding: 0px 5px 0px 0px;"),
+                                        top: 0;
+                                        right: 0;
+                                        background-color: rgba(0, 0, 0, 0);
+                                        border-width: 0px;
+                                        padding: 0px 5px 0px 0px;"),
 
-                  fluidRow(
-                    column(width = 3,
-                           tags$p(tags$br(),
-                                  strong("Select country"),
-                                  style = "font-size: 1.17vmin;"),
-                           shinyWidgets::pickerInput(inputId = "Country_report_nation",
-                                                     label = NULL,
-                                                     choices = c(Countries$Country_ISO3),
-                                                     multiple = FALSE,
-                                                     options = list(
-                                                       size = 10,
-                                                       `live-search` = TRUE
-                                                     ))
-                    ),
-                    column(width = 4,
-                           align = "center",
 br(),
-br(),
-                           withBusyIndicatorUI(
-                             downloadButton(outputId = "download_Country_report",
-                                            label = "Download as PDF",
-                                            style = "box-shadow: none!important;
-                                                     outline: 0;
-                                                     background-color: transparent;
-                                                     border-width: 0px;"))
-                    ),
-                    column(width = 4,
-                           align = "center",
-br(),
-br(),
-                           withBusyIndicatorUI(
-                             downloadButton(outputId = "download_Country_data",
-                                            label = "Download data",
-                                            style = "box-shadow: none!important;
-                                                     outline: 0;
-                                                     background-color: transparent;
-                                                     border-width: 0px;"))
-                    )
+
+                  tags$table(style = "width: 100%;",
+                             tags$tr(tags$td(style = "width: 30%",
+                                             align = "left",
+                                             h5("Country"),
+                                             shinyWidgets::pickerInput(inputId = "Country_report_nation",
+                                                                       label = NULL,
+                                                                       choices = c(Countries$Country_ISO3),
+                                                                       multiple = FALSE,
+                                                                       options = list(
+                                                                         size = 10,
+                                                                         `live-search` = TRUE
+                                                                       ))
+                                    ),
+                                    tags$td(style = "width: 28%;"),
+                                    tags$td(style = "width: 21%;",
+                                            align = "right",
+                                            withBusyIndicatorUI(
+                                              downloadButton(outputId = "download_Country_report",
+                                                             label = h5("Download as PDF",
+                                                                        style = "display: inline-block;"),
+                                                             style = "box-shadow: none!important;
+                                                                      outline: 0;
+                                                                      border-width: 0px;
+                                                                      padding: 0px 5px 0px 5px;"))
+                                    ),
+                                    tags$td(style = "width: 21%",
+                                            align = "left",
+                                            withBusyIndicatorUI(
+                                              downloadButton(outputId = "download_Country_data",
+                                                             label = h5("Download data",
+                                                                        style = "display: inline-block;"),
+                                                             style = "box-shadow: none!important;
+                                                                      outline: 0;
+                                                                      border-width: 0px;
+                                                                      padding: 0px 5px 0px 5px;"))
+                                    )
+                             )
+
                   ),
 
 div(style = "height: 0.5vh;"),
@@ -690,7 +1003,8 @@ div(style = "height: 0.5vh;"),
     )
 
   ),
-  # 3.5 #####===== About panel =====#####
+
+  # 3.6 #####===== About panel =====#####
   hidden(
 
     absolutePanel(id = "about_panel",
@@ -700,18 +1014,18 @@ div(style = "height: 0.5vh;"),
                   right = 160,
                   left = "auto",
                   bottom = "auto",
-                  width = "31%",
+                  width = "32%",
                   height = "auto",
 
                   actionButton(inputId = "close_about_panel",
                                label = icon(name = "times",
                                             lib = "font-awesome"),
                                style = "position: absolute;
-                                            top: 0;
-                                            right: 0;
-                                            background-color: rgba(0, 0, 0, 0);
-                                            border-width: 0px;
-                                            padding: 0px 5px 0px 0px;"),
+                                        top: 0;
+                                        right: 0;
+                                        background-color: rgba(0, 0, 0, 0);
+                                        border-width: 0px;
+                                        padding: 0px 5px 0px 0px;"),
 
                   tags$p(strong("Resistance bank"),
                          style = "font-size: 1.6vmin;
@@ -726,14 +1040,48 @@ div(style = "height: 0.5vh;"),
 
     )
 
+  ),
+
+  # 3.7 #####===== Limitations panel =====#####
+  hidden(
+
+    absolutePanel(id = "limitations_panel",
+                  fixed = TRUE,
+                  draggable = FALSE,
+                  top = 11,
+                  right = 160,
+                  left = "auto",
+                  bottom = "auto",
+                  width = "32%",
+                  height = "auto",
+
+                  actionButton(inputId = "close_limitations_panel",
+                               label = icon(name = "times",
+                                            lib = "font-awesome"),
+                               style = "position: absolute;
+                                              top: 0;
+                                              right: 0;
+                                              background-color: rgba(0, 0, 0, 0);
+                                              border-width: 0px;
+                                              padding: 0px 5px 0px 0px;"),
+
+                  tags$p(strong("Limitations"),
+                         style = "font-size: 1.6vmin;
+                                    padding: 0px 0px 0px 4px;"),
+
+                  fluidRow(
+                    column(width = 12,
+                           source(file = "modules/ui_text-limitations-panel.R",
+                                  local = TRUE)$value
+                    )
+                  )
+
+    )
+
   )
 
   #########################=========================#########################
   ), # Closes the "World Map" division
 
 ) # Closes fluidPage
-
-
-
-
 

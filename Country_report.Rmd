@@ -144,9 +144,7 @@ resistancebank_surveys <- params[["resistancebank_surveys"]]
 
 # resistancebank_surveys <- subset(resistancebank_surveys,
 #                                  is.element(el = ISO3,
-#                                             set = "ETH") &
-#                                    is.element(el = Author,
-#                                               set = "Pires"))
+#                                             set = "ETH"))
 
 resistancebank_surveys$Study <- 1
 
@@ -306,7 +304,10 @@ livestock_piechart <- ggplot(data = livestock_data,
               start = 0) +
   scale_fill_manual(values = c("Cattle" = "#83C77A",
                                "Chickens" = "#F9A600",
-                               "Pigs" = "#F5C0CD")[c(unique(livestock_data$Variable))]) +
+                               "Pigs" = "#F5C0CD")[c(unique(livestock_data$Variable))],
+                    labels = c("Cattle",
+                               "Chicken",
+                               "Pig")) +
   labs(title = expression(paste(bold(Livestock), " ", bold(heads^2)))) +
   theme_void() +
   ggrepel::geom_text_repel(aes(label = Rounded),
@@ -464,7 +465,7 @@ ggplot(data = resistancebank_surveys,
 \setstretch{0.3}
 
 \begingroup\scriptsize
-\textbf{Figure 2}. Number of peer-reviewed surveys {`r if (sum(subset(x = resistancebank_surveys, subset = !is.element(el = DOI, set = "nostudy"))$Type == "Gray literature") != 0) {"and gray literature reports," } else {""}` }and average number of point prevalence surveys per year (red line).
+\textbf{Figure 2}. Number of peer-reviewed surveys {`r if (sum(subset(x = resistancebank_surveys, subset = !is.element(el = DOI, set = "nostudy"))$Type == "Gray literature") != 0) {"and gray literature reports," } else {""}` }and average number of point-prevalence surveys per year (red line).
 \endgroup
 
 `r fig_table_end()`
