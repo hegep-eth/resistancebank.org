@@ -1,626 +1,16 @@
 
 server <- function(input, output, session) {
 
-  #########################=========================#########################
+  # If the application is in testing mode, once the app is launched it stops the RStudio console by simply closing the browser
+  if (testing_mode == TRUE) {source(file = "modules/stop_through_browser.R", local = TRUE)$value}
+
   # 1. ##########========== OPERATIONS ON PANELS AND DATASETS ==========##########
 
-  # 1.1 #####===== Initial panel =====#####
-  download_RESBANK2_reactive_values <- reactiveValues(download_number = 0)
-
-  observeEvent(input$explore_amr_map |
-               input$add_your_survey1 |
-               download_RESBANK2_reactive_values$download_number |
-               input$close_initial_panel, {
-
-    hideElement(id = "initial_panel_division",
-                anim = TRUE,
-                animType = "fade")
-
-    showElement(id = "controls_panel",
-                anim = TRUE,
-                animType = "fade")
-
-    showElement(id = "target_panel",
-                anim = TRUE,
-                animType = "fade")
-
-    showElement(id = "initial_map_view_panel",
-                anim = TRUE,
-                animType = "fade")
-
-    showElement(id = "name_Maps_panel",
-                anim = TRUE,
-                animType = "fade")
-
-  }, ignoreInit = TRUE)
-
-  # 1.2 #####===== Controls panel =====#####
-
-  # 1.2.1 ###= Add your survey panel =#####
-  observeEvent(input$add_your_survey1, {
-
-    hideElement(id = "add_your_survey2",
-                anim = FALSE)
-
-    showElement(id = "close_add_your_survey_controls",
-                anim = FALSE)
-
-    showElement(id = "add_your_survey_division",
-                anim = TRUE,
-                animType = "fade")
-
-  })
-
-  observeEvent(input$close_add_your_survey_division, {
-
-    hideElement(id = "add_your_survey_division",
-                anim = TRUE,
-                animType = "fade")
-
-    showElement(id = "add_your_survey2",
-                anim = FALSE)
-
-    hideElement(id = "close_add_your_survey_controls",
-                anim = FALSE)
-
-  })
-
-  observeEvent(input$close_add_your_survey_controls, {
-
-    hideElement(id = "add_your_survey_division",
-                anim = TRUE,
-                animType = "fade")
-
-    hideElement(id = "close_add_your_survey_controls",
-                anim = FALSE)
-
-    showElement(id = "add_your_survey2",
-                anim = FALSE)
-
-  })
-
-  observeEvent(input$add_your_survey2, {
-
-    showElement(id = "add_your_survey_division",
-                anim = TRUE,
-                animType = "fade")
-
-    showElement(id = "close_add_your_survey_controls",
-                anim = FALSE)
-
-    hideElement(id = "add_your_survey2",
-                anim = FALSE)
-
-    hideElement(id = "form",
-                anim = TRUE,
-                animType = "fade")
-
-    hideElement(id = "filterdata_panel",
-                anim = TRUE,
-                animType = "fade")
-
-    hideElement(id = "close_filterdata_panel_controls",
-                anim = FALSE)
-
-    showElement(id = "display_filterdata_panel",
-                anim = FALSE)
-
-    hideElement(id = "download_Country_report_panel",
-                anim = TRUE,
-                animType = "fade")
-
-    hideElement(id = "close_country_report_panel_controls",
-                anim = FALSE)
-
-    showElement(id = "display_Country_report_panel",
-                anim = FALSE)
-
-    hideElement(id = "about_panel",
-                anim = TRUE,
-                animType = "fade")
-
-    hideElement(id = "close_about_panel_controls",
-                anim = FALSE)
-
-    showElement(id = "display_about_panel",
-                anim = FALSE)
-
-    hideElement(id = "limitations_panel",
-                anim = TRUE,
-                animType = "fade")
-
-    hideElement(id = "close_limitations_panel_controls",
-                anim = FALSE)
-
-    showElement(id = "display_limitations_panel",
-                anim = FALSE)
-
-  })
-
-  # 1.2.1.1 ###= Fill form panel =#####
-  observeEvent(input$fill_form, {
-
-    showElement(id = "form",
-                anim = TRUE,
-                animType = "fade")
-
-    hideElement(id = "add_your_survey_division",
-                anim = TRUE,
-                animType = "fade")
-
-    hideElement(id = "close_add_your_survey_controls",
-                anim = FALSE)
-
-    showElement(id = "close_add_your_survey_controls2",
-                anim = FALSE)
-
-  })
-
-  observeEvent(input$close_add_your_survey_controls2, {
-
-    hideElement(id = "form",
-                anim = TRUE,
-                animType = "fade")
-
-    showElement(id = "add_your_survey2",
-                anim = TRUE,
-                animType = "fade")
-
-    hideElement(id = "close_add_your_survey_controls2",
-                anim = FALSE)
-
-  })
-
-  observeEvent(input$close_form, {
-
-    hideElement(id = "form",
-                anim = TRUE,
-                animType = "fade")
-
-    hideElement(id = "close_add_your_survey_controls2",
-                anim = FALSE)
-
-    showElement(id = "add_your_survey_division",
-                anim = TRUE,
-                animType = "fade")
-
-    showElement(id = "close_add_your_survey_controls",
-                anim = FALSE)
-
-  })
-
-  # 1.2.2 ###= Filter data panel =#####
-  observeEvent(input$display_filterdata_panel, {
-
-    showElement(id = "filterdata_panel",
-                anim = TRUE,
-                animType = "fade")
-
-    hideElement(id = "display_filterdata_panel",
-                anim = FALSE)
-
-    showElement(id = "close_filterdata_panel_controls",
-                anim = FALSE)
-
-    hideElement(id = "add_your_survey_division",
-                anim = TRUE,
-                animType = "fade")
-
-    hideElement(id = "close_add_your_survey_controls",
-                anim = FALSE)
-
-    showElement(id = "add_your_survey2",
-                anim = FALSE)
-
-    hideElement(id = "download_Country_report_panel",
-                anim = TRUE,
-                animType = "fade")
-
-    hideElement(id = "close_country_report_panel_controls",
-                anim = FALSE)
-
-    showElement(id = "display_Country_report_panel",
-                anim = FALSE)
-
-    hideElement(id = "about_panel",
-                anim = TRUE,
-                animType = "fade")
-
-    hideElement(id = "close_about_panel_controls",
-                anim = FALSE)
-
-    showElement(id = "display_about_panel",
-                anim = FALSE)
-
-    hideElement(id = "limitations_panel",
-                anim = TRUE,
-                animType = "fade")
-
-    hideElement(id = "close_limitations_panel_controls",
-                anim = FALSE)
-
-    showElement(id = "display_limitations_panel",
-                anim = FALSE)
-
-    hideElement(id = "form",
-                anim = TRUE,
-                animType = "fade")
-
-    hideElement(id = "close_add_your_survey_controls2",
-                anim = FALSE)
-
-    # Filter panel inputs
-    showElement(id = "filterdata_panel_inputs",
-                anim = FALSE)
-
-    hideElement(id = "show_filterdata_panel_inputs",
-                anim = FALSE)
-
-    showElement(id = "hide_filterdata_panel_inputs",
-                anim = FALSE)
-
-  })
-
-  observeEvent(input$close_filterdata_panel, {
-
-    hideElement(id = "filterdata_panel",
-                anim = TRUE,
-                animType = "fade")
-
-    hideElement(id = "close_filterdata_panel_controls",
-                anim = FALSE)
-
-    showElement(id = "display_filterdata_panel",
-                anim = FALSE)
-
-  })
-
-  observeEvent(input$close_filterdata_panel_controls, {
-
-    hideElement(id = "filterdata_panel",
-                anim = TRUE,
-                animType = "fade")
-
-    hideElement(id = "close_filterdata_panel_controls",
-                anim = FALSE)
-
-    showElement(id = "display_filterdata_panel",
-                anim = FALSE)
-
-    # Filter panel inputs
-    Sys.sleep(time = 0.5)
-
-    showElement(id = "filterdata_panel_inputs",
-                anim = FALSE)
-
-    hideElement(id = "show_filterdata_panel_inputs",
-                anim = FALSE)
-
-    showElement(id = "hide_filterdata_panel_inputs",
-                anim = FALSE)
-
-  })
-
-  observeEvent(input$hide_filterdata_panel_inputs, {
-
-    hideElement(id = "filterdata_panel_inputs",
-                anim = TRUE,
-                animType = "slide")
-
-    hideElement(id = "hide_filterdata_panel_inputs")
-
-    showElement(id = "show_filterdata_panel_inputs")
-
-  })
-
-  observeEvent(input$show_filterdata_panel_inputs, {
-
-    showElement(id = "filterdata_panel_inputs",
-                anim = TRUE,
-                animType = "slide")
-
-    hideElement(id = "show_filterdata_panel_inputs")
-
-    showElement(id = "hide_filterdata_panel_inputs")
-
-  })
-
-  # 1.2.3 ###= Country report panel =#####
-  observeEvent(input$display_Country_report_panel, {
-
-    showElement(id = "download_Country_report_panel",
-                anim = TRUE,
-                animType = "fade")
-
-    hideElement(id = "display_Country_report_panel",
-                anim = FALSE)
-
-    showElement(id = "close_country_report_panel_controls",
-                anim = FALSE)
-
-    hideElement(id = "add_your_survey_division",
-                anim = TRUE,
-                animType = "fade")
-
-    hideElement(id = "close_add_your_survey_controls",
-                anim = FALSE)
-
-    showElement(id = "add_your_survey2",
-                anim = FALSE)
-
-    hideElement(id = "filterdata_panel",
-                anim = TRUE,
-                animType = "fade")
-
-    hideElement(id = "close_filterdata_panel_controls",
-                anim = FALSE)
-
-    showElement(id = "display_filterdata_panel",
-                anim = FALSE)
-
-    hideElement(id = "about_panel",
-                anim = TRUE,
-                animType = "fade")
-
-    hideElement(id = "close_about_panel_controls",
-                anim = FALSE)
-
-    showElement(id = "display_about_panel",
-                anim = FALSE)
-
-    hideElement(id = "limitations_panel",
-                anim = TRUE,
-                animType = "fade")
-
-    hideElement(id = "close_limitations_panel_controls",
-                anim = FALSE)
-
-    showElement(id = "display_limitations_panel",
-                anim = FALSE)
-
-    hideElement(id = "form",
-                anim = TRUE,
-                animType = "fade")
-
-    hideElement(id = "close_add_your_survey_controls2",
-                anim = FALSE)
-
-  })
-
-  observeEvent(input$close_country_report_panel, {
-
-    hideElement(id = "download_Country_report_panel",
-                anim = TRUE,
-                animType = "fade")
-
-    hideElement(id = "close_country_report_panel_controls",
-                anim = FALSE)
-
-    showElement(id = "display_Country_report_panel",
-                anim = FALSE)
-
-  })
-
-  observeEvent(input$close_country_report_panel_controls, {
-
-    hideElement(id = "download_Country_report_panel",
-                anim = TRUE,
-                animType = "fade")
-
-    hideElement(id = "close_country_report_panel_controls",
-                anim = FALSE)
-
-    showElement(id = "display_Country_report_panel",
-                anim = FALSE)
-
-  })
-
-  country_report_disabled_choices <- c(Countries$Country_ISO3) %in% c(setdiff(x = Countries$Country_ISO3,
-                                                                              y = Countries_PPS$Country_ISO3))
-
-  shinyWidgets::updatePickerInput(session = session,
-                                  inputId = "Country_report_nation",
-                                  choices = c(Countries$Country_ISO3),
-                                  choicesOpt = list(
-                                    disabled = country_report_disabled_choices,
-                                    style = ifelse(test = country_report_disabled_choices,
-                                                   yes = "font-size: 82%; line-height: 1.2; color: #DEDEDE;",
-                                                   no = "font-size: 82%; line-height: 1.2;")),
-                                  selected = Countries$Country_ISO3[Countries$Country_ISO3 == "India (IND)"])
-
-  # 1.2.4 ###= About panel =#####
-  observeEvent(input$display_about_panel, {
-
-    showElement(id = "about_panel",
-                anim = TRUE,
-                animType = "fade")
-
-    hideElement(id = "display_about_panel",
-                anim = FALSE)
-
-    showElement(id = "close_about_panel_controls",
-                anim = FALSE)
-
-    hideElement(id = "add_your_survey_division",
-                anim = TRUE,
-                animType = "fade")
-
-    hideElement(id = "close_add_your_survey_controls",
-                anim = FALSE)
-
-    showElement(id = "add_your_survey2",
-                anim = FALSE)
-
-    hideElement(id = "form",
-                anim = TRUE,
-                animType = "fade")
-
-    hideElement(id = "filterdata_panel",
-                anim = TRUE,
-                animType = "fade")
-
-    hideElement(id = "close_filterdata_panel_controls",
-                anim = FALSE)
-
-    showElement(id = "display_filterdata_panel",
-                anim = FALSE)
-
-    hideElement(id = "download_Country_report_panel",
-                anim = TRUE,
-                animType = "fade")
-
-    hideElement(id = "close_country_report_panel_controls",
-                anim = FALSE)
-
-    showElement(id = "display_Country_report_panel",
-                anim = FALSE)
-
-    hideElement(id = "limitations_panel",
-                anim = TRUE,
-                animType = "fade")
-
-    hideElement(id = "close_limitations_panel_controls",
-                anim = FALSE)
-
-    showElement(id = "display_limitations_panel",
-                anim = FALSE)
-
-    hideElement(id = "form",
-                anim = TRUE,
-                animType = "fade")
-
-    hideElement(id = "close_add_your_survey_controls2",
-                anim = FALSE)
-
-  })
-
-  observeEvent(input$close_about_panel, {
-
-    hideElement(id = "about_panel",
-                anim = TRUE,
-                animType = "fade")
-
-    hideElement(id = "close_about_panel_controls",
-                anim = FALSE)
-
-    showElement(id = "display_about_panel",
-                anim = FALSE)
-
-  })
-
-  observeEvent(input$close_about_panel_controls, {
-
-    hideElement(id = "about_panel",
-                anim = TRUE,
-                animType = "fade")
-
-    hideElement(id = "close_about_panel_controls",
-                anim = FALSE)
-
-    showElement(id = "display_about_panel",
-                anim = FALSE)
-
-  })
-
-  # 1.2.5 ###= Limitations panel =#####
-  observeEvent(input$display_limitations_panel, {
-
-    showElement(id = "limitations_panel",
-                anim = TRUE,
-                animType = "fade")
-
-    hideElement(id = "display_limitations_panel",
-                anim = FALSE)
-
-    showElement(id = "close_limitations_panel_controls",
-                anim = FALSE)
-
-    hideElement(id = "add_your_survey_division",
-                anim = TRUE,
-                animType = "fade")
-
-    hideElement(id = "close_add_your_survey_controls",
-                anim = FALSE)
-
-    showElement(id = "add_your_survey2",
-                anim = FALSE)
-
-    hideElement(id = "form",
-                anim = TRUE,
-                animType = "fade")
-
-    hideElement(id = "filterdata_panel",
-                anim = TRUE,
-                animType = "fade")
-
-    hideElement(id = "close_filterdata_panel_controls",
-                anim = FALSE)
-
-    showElement(id = "display_filterdata_panel",
-                anim = FALSE)
-
-    hideElement(id = "download_Country_report_panel",
-                anim = TRUE,
-                animType = "fade")
-
-    hideElement(id = "close_country_report_panel_controls",
-                anim = FALSE)
-
-    showElement(id = "display_Country_report_panel",
-                anim = FALSE)
-
-    hideElement(id = "about_panel",
-                anim = TRUE,
-                animType = "fade")
-
-    hideElement(id = "close_about_panel_controls",
-                anim = FALSE)
-
-    showElement(id = "display_about_panel",
-                anim = FALSE)
-
-    hideElement(id = "form",
-                anim = TRUE,
-                animType = "fade")
-
-    hideElement(id = "close_add_your_survey_controls2",
-                anim = FALSE)
-
-  })
-
-  observeEvent(input$close_limitations_panel, {
-
-    hideElement(id = "limitations_panel",
-                anim = TRUE,
-                animType = "fade")
-
-    hideElement(id = "close_limitations_panel_controls",
-                anim = FALSE)
-
-    showElement(id = "display_limitations_panel",
-                anim = FALSE)
-
-  })
-
-  observeEvent(input$close_limitations_panel_controls, {
-
-    hideElement(id = "limitations_panel",
-                anim = TRUE,
-                animType = "fade")
-
-    hideElement(id = "close_limitations_panel_controls",
-                anim = FALSE)
-
-    showElement(id = "display_limitations_panel",
-                anim = FALSE)
-
-  })
-
-  # 1.2.6 ###= Create the reactive resistancebank filtered datasets =#####
-
-
-
-
+  # 1.1 #####===== Display and hide panels =====#####
+  source(file = "modules/server_display-hide-panels.R",
+         local = TRUE)$value
+
+  # 1.2 #####===== Create the reactive resistancebank filtered datasets =====#####
 
 
 
@@ -634,7 +24,10 @@ server <- function(input, output, session) {
   #        bucket = "amr-hegep-bucket")
   #
   # resistancebank_filtered <- resistancebank %>%
-  #   filter(Class_WHO %in% "Penicillins (Critically important)")
+  #   filter(Class_WHO %in% "Penicillins (Critically important)") %>%
+  #   as.data.frame()
+  #
+  # str(resistancebank_filtered)
   #
   # resistancebank_surveys_filtered <- resistancebank_filtered[!duplicated(resistancebank_filtered[c("DOI",
   #                                                                                                  "XCoord",
@@ -669,18 +62,13 @@ server <- function(input, output, session) {
 
 
 
-
-
-
-
-
-  # 1.2.6.1 ###= resistancebank filtered datasaet =#####
+  # 1.2.1 ###= resistancebank filtered dataset =#####
   resistancebank_filtered <- reactive({
 
     resistancebank_filtered <- resistancebank %>%
       filter(ISO3 %in% {if (is.null(input$filterdata_ISO3)) {unique(resistancebank$ISO3)} else {c(input$filterdata_ISO3)}} &
              Species %in% {if (is.null(input$filterdata_species)) {unique(resistancebank$Species)} else {c(input$filterdata_species)}} &
-             SampleOrigin %in% {if (is.null(input$filterdata_sample_origin)) {unique(resistancebank$SampleOrigin)} else {c(input$filterdata_sample_origin)}} &
+             SampleType %in% {if (is.null(input$filterdata_sample_type)) {unique(resistancebank$SampleType)} else {c(input$filterdata_sample_type)}} &
              Pathogens %in% {if (is.null(input$filterdata_pathogen)) {unique(resistancebank$Pathogens)} else {c(input$filterdata_pathogen)}} &
              Compound %in% {if (is.null(input$filterdata_compound)) {unique(resistancebank$Compound)} else {c(input$filterdata_compound)}} &
              Class_WHO %in% {if (is.null(input$filterdata_compound_class)) {unique(resistancebank$Class_WHO)} else {c(input$filterdata_compound_class)}} &
@@ -698,7 +86,7 @@ server <- function(input, output, session) {
 
   })
 
-  # 1.2.6.2 ###= resistancebank surveys filtered datasaet =#####
+  # 1.2.2 ###= resistancebank surveys filtered dataset =#####
   resistancebank_surveys_filtered <- reactive({
 
     resistancebank_surveys_filtered <- resistancebank_filtered()[!duplicated(resistancebank_filtered()[c("DOI",
@@ -722,7 +110,7 @@ server <- function(input, output, session) {
 
   })
 
-  # 1.2.6.3 ###= resistancebank bibliography filtered datasaet =#####
+  # 1.2.3 ###= resistancebank bibliography filtered dataset =#####
   resistancebank_bibliography <- reactive({
 
     resistancebank_bibliography <- resistancebank_surveys_filtered()[resistancebank_surveys_filtered()$Journal != "Report could not be linked to a peer-reviewed publication.", ]
@@ -760,19 +148,19 @@ server <- function(input, output, session) {
 
   })
 
-  # 1.2.6.4 ###= Display the reactive table of every unique peer-reviewed paper available after filtering of resistancebank =#####
+  # 1.2.4 ###= Display the reactive table of every unique peer-reviewed paper available after filtering of resistancebank =#####
   output$filterdata_papers <- DT::renderDataTable({
 
     if (nrow(resistancebank_filtered()) == nrow(resistancebank) &
         all(is.null(c(input$filterdata_ISO3,
                       input$filterdata_species,
-                      input$filterdata_sample_origin,
+                      input$filterdata_sample_type,
                       input$filterdata_pathogen,
                       input$filterdata_compound,
                       input$filterdata_compound_class,
                       input$filterdata_compound_agisar)))) {
 
-      DT::datatable(data.frame("Message" = "Filter the Resistance bank database to display peer-reviewed studies associated with your selection."),
+      DT::datatable(data.frame("Message" = "Filter the resistancebank.org database to display peer-reviewed studies associated with your selection."),
                     rownames = FALSE,
                     colnames = " ",
                     selection = "none",
@@ -781,7 +169,7 @@ server <- function(input, output, session) {
     } else if (nrow(resistancebank_filtered()) > 0 &
                nrow(resistancebank_bibliography()) == 0) {
 
-      DT::datatable(data.frame("Message" = "There are no peer-reviewed studies in the Resistance bank database associated with your selection."),
+      DT::datatable(data.frame("Message" = "There are no peer-reviewed studies in the resistancebank.org database associated with your selection."),
                     rownames = FALSE,
                     colnames = " ",
                     selection = "none",
@@ -792,7 +180,7 @@ server <- function(input, output, session) {
 
     } else if (!all(c(input$filterdata_ISO3) %in% resistancebank_filtered()$ISO3) |
                !all(c(input$filterdata_species) %in% resistancebank_filtered()$Species) |
-               !all(c(input$filterdata_sample_origin) %in% resistancebank_filtered()$SampleOrigin) |
+               !all(c(input$filterdata_sample_type) %in% resistancebank_filtered()$SampleType) |
                !all(c(input$filterdata_pathogen) %in% resistancebank_filtered()$Pathogens) |
                !all(c(input$filterdata_compound) %in% resistancebank_filtered()$Compound) |
                !all(c(input$filterdata_compound_class) %in% resistancebank_filtered()$Class_WHO) |
@@ -810,7 +198,12 @@ server <- function(input, output, session) {
                                    paging = FALSE,
                                    lengthChange = FALSE,
                                    info = FALSE,
-                                   deferRender = TRUE)) %>%
+                                   deferRender = TRUE,
+                                   autoWidth = TRUE
+                                   # columnDefs = list(list(width = "500px",
+                                   #                        targets = c("Title")))
+                                   )
+                    ) %>%
         DT::formatStyle(columns = c("Author",
                                     "Title",
                                     "Journal",
@@ -824,7 +217,7 @@ server <- function(input, output, session) {
 
   })
 
-  # 1.2.6.5 ###= Display information about the reactive resistancebank datasets =#####
+  # 1.2.5 ###= Display information about the reactive resistancebank datasets =#####
   output$resistancebank_filtered_rows <- renderText({
 
     format(x = nrow(resistancebank_filtered()),
@@ -840,662 +233,14 @@ server <- function(input, output, session) {
   })
 
   # 2. ##########========== WORLD MAP =========##########
-  output$world_map <- renderLeaflet({
-
-    leaflet(options = leafletOptions(zoomControl = FALSE,
-                                     zoomDelta = 1,
-                                     zoomSnap = 0,
-                                     minZoom = 2.7,
-                                     maxZoom = 10,
-                                     preferCanvas = TRUE)) %>%
-
-      htmlwidgets::onRender("function(el, x) {
-        L.control.zoom({ position: 'bottomright' }).addTo(this)
-        }") %>%
-
-      fitBounds(lat1 = map_initialview_data$target_zone_bound1.lat,
-                lng1 = map_initialview_data$target_zone_bound1.long,
-                lat2 = map_initialview_data$target_zone_bound2.lat,
-                lng2 = map_initialview_data$target_zone_bound2.long) %>%
-
-      addMapPane(name = "Minimal_layer",
-                 zIndex = 400) %>%
-
-      addMapPane(name = "Satellite_layer",
-                 zIndex = 405) %>%
-
-      addMapPane(name = "P50_bw_layer",
-                 zIndex = 410) %>%
-
-      addMapPane(name = "P50_layer",
-                 zIndex = 415) %>%
-
-      addMapPane(name = "boundaries_labels_layer",
-                 zIndex = 420) %>%
-
-      addMapPane(name = "PPS_layer",
-                 zIndex = 500) %>%
-
-      addMapPane(name = "PPS_filtered_layer",
-                 zIndex = 515) %>%
-
-      addScaleBar(position = "bottomleft",
-                  scaleBarOptions(maxWidth = 200)) %>%
-
-      addProviderTiles(
-        provider = providers$Esri.WorldShadedRelief,
-        group = "Minimal",
-        options = c(pathOptions(pane = "Minimal_layer"),
-                    providerTileOptions(updateWhenZooming = FALSE,
-                                        updateWhenIdle = FALSE))) %>%
-
-      addProviderTiles(
-        provider = providers$Esri.WorldPhysical,
-        group = "Satellite",
-        options = c(pathOptions(pane = "Satellite_layer"),
-                    providerTileOptions(updateWhenZooming = FALSE,
-                                        updateWhenIdle = FALSE))) %>%
-
-      hideGroup(group = "Satellite") %>%
-
-  # Black and white hotspots map
-      addTiles(
-        urlTemplate = "https://nicocriscuolo.github.io/maps_tiles/resistancebank/P50_bw-2019/{z}/{x}/{y}.png",
-        group = "AMR Hotspots bw",
-        options = c(pathOptions(pane = "P50_bw_layer"),
-                    providerTileOptions(updateWhenZooming = FALSE,
-                                        updateWhenIdle = FALSE))) %>%
-
-      hideGroup(group = "AMR Hotspots bw") %>%
-
-  # Red hotspots map
-      addTiles(
-        urlTemplate = "https://nicocriscuolo.github.io/maps_tiles/resistancebank/P50_red-2019/{z}/{x}/{y}.png",
-        group = "AMR Hotspots",
-        options = c(pathOptions(pane = "P50_layer"),
-                    providerTileOptions(updateWhenZooming = FALSE,
-                                        updateWhenIdle = FALSE))) %>%
-
-  # States and regions borders and places names
-      addProviderTiles(
-        provider = providers$Stamen.TonerHybrid,
-        options = c(pathOptions(pane = "boundaries_labels_layer"),
-                    providerTileOptions(updateWhenZooming = FALSE,
-                                        updateWhenIdle = FALSE))) %>%
-
-      addMarkers(
-        data = resistancebank_surveys,
-        lng = ~XCoord,
-        lat = ~YCoord,
-        icon = PPS_markers["blue"],
-        group = "AMR Surveys",
-        options = pathOptions(pane = "PPS_layer"),
-        popup = ~paste("<div style='max-height:810px' align='justify'>",
-                        "<h3>",
-                        paste0(Author,
-                               " et al.",
-                               ifelse(test = is.na(PubDate),
-                                      yes = "",
-                                      no = paste0(", ", PubDate))), "<br>",
-                        "</h3>",
-                        "<br/>",
-                        "<span style='font-size:12.7px'>",
-                        "<strong>Title</strong>", ": ",
-                        Title, "<br>",
-                        "<br/>",
-                        "<strong>Authors</strong>", ": ",
-                        Authors_name, "<br>",
-                        "<br/>",
-                        "<strong>Journal</strong>", ": ",
-                        paste0(ifelse(test = is.na(URL) & Journal == "Report could not be linked to a peer-reviewed publication." |
-                                        is.na(URL) & Journal != "Report could not be linked to a peer-reviewed publication." |
-                                        !is.na(URL) & Journal == "Report could not be linked to a peer-reviewed publication.",
-                                      yes = paste0(Journal),
-                                      no = paste0("<a href='", URL, "'", " target='_blank'>", Journal, "</a>"))), "<br>",
-                        "<br/>",
-                        Plot, "<br>",
-                        "<br/>",
-                        "<div style='line-height:13px'>",
-                        "<strong>Antibiotics</strong>", ": ",
-                        "</span>",
-                        "<span style='color:#a8a4a4; font-size:11px'>",
-                        Plot_caption,
-                        "</span>",
-                        "</div>",
-                        "</div>",
-                        sep = ""),
-        label = ~as.character(paste0(Author,
-                                     ifelse(test = is.na(PubDate),
-                                            yes = "",
-                                           no = paste0(", ", PubDate)))),
-        labelOptions = labelOptions(direction = "bottom",
-                                    style = list("font-size" = "12.7px")),
-        clusterId = "reviewed_markers_cluster",
-        clusterOptions = markerClusterOptions(iconCreateFunction = marker_cluster[[1]],
-                                              zoomToBoundsOnClick = FALSE,
-                                              removeOutsideVisibleBounds = FALSE,
-                                              spiderfyDistanceMultiplier = 2,
-                                              freezeAtZoom = 7) # !!!!!!!!!!!!!!
-      ) %>%
-
-        addLegend(pal = P50_palette,
-                  values = 80:0,
-                  opacity = 1,
-                  title = "AMR [%]",
-                  group = "AMR Hotspots",
-                  position = "bottomleft",
-                  labFormat = labelFormat(transform = function(x) sort(x, decreasing = TRUE)))
-
-
-  })
-
-  # 2.1 #####===== Add control layers after closing initial panel =====#####
-  observeEvent(input$explore_amr_map |
-               input$add_your_survey1 |
-               download_RESBANK2_reactive_values$download_number |
-               input$close_initial_panel |
-               any(!is.null(c(input$filterdata_ISO3,
-                              input$filterdata_species,
-                              input$filterdata_sample_origin,
-                              input$filterdata_pathogen,
-                              input$filterdata_compound,
-                              input$filterdata_compound_class,
-                              input$filterdata_compound_agisar))), {
-
-    leafletProxy(mapId = "world_map") %>%
-
-      addLayersControl(overlayGroups = c("AMR Surveys",
-                                         "AMR Hotspots",
-                                         "Satellite"),
-                       options = layersControlOptions(collapsed = FALSE))
-
-  }, ignoreInit = TRUE)
-
-  # 2.2 #####===== Display and hide the black and white P50 map when filtering data =====#####
-  observeEvent(input$display_filtered_data, {
-
-    hideElement(id = "filterdata_panel_inputs",
-                anim = TRUE,
-                animType = "slide")
-
-    hideElement(id = "hide_filterdata_panel_inputs")
-
-    showElement(id = "show_filterdata_panel_inputs")
-
-    if (!is.null(input$filterdata_compound_class)) {
-
-      resistancebank_surveys_filtered <- mutate(.data = resistancebank_surveys_filtered(),
-                                                group = cut(x = resistancebank_surveys_filtered()[, unique(resistancebank$Class[resistancebank$Class_WHO == input$filterdata_compound_class])],
-                                                            breaks = c(seq(from = 0,
-                                                                           to = 100,
-                                                                           by = 5)),
-                                                            labels = c("239951",
-                                                                       "57B05B",
-                                                                       "6EBE60",
-                                                                       "83C865",
-                                                                       "97D16C",
-                                                                       "ADDB77",
-                                                                       "BEE382",
-                                                                       "D4EE8F",
-                                                                       "E4F194",
-                                                                       "ECEE94",
-                                                                       "F2EA94",
-                                                                       "F9E895",
-                                                                       "FFDA8D",
-                                                                       "FDC67B",
-                                                                       "FBAF6C",
-                                                                       "F99A59",
-                                                                       "F5864E",
-                                                                       "EF7445",
-                                                                       "E55C3B",
-                                                                       "D93429"),
-                                                            include.lowest = TRUE))
-
-    } else {
-
-      resistancebank_surveys_filtered <- resistancebank_surveys_filtered()
-
-    }
-
-    leafletProxy(mapId = "world_map") %>%
-
-      fitBounds(lat1 = map_initialview_data$target_zone_bound1.lat,
-                lng1 = map_initialview_data$target_zone_bound1.long,
-                lat2 = map_initialview_data$target_zone_bound2.lat,
-                lng2 = map_initialview_data$target_zone_bound2.long) %>%
-
-      clearMarkers() %>%
-
-      hideGroup(group = "AMR Hotspots") %>%
-
-      hideGroup(group = "AMR Surveys") %>%
-
-      showGroup(group = "AMR Hotspots bw") %>%
-
-      addMarkers(data = resistancebank_surveys_filtered,
-                 lng = ~XCoord,
-                 lat = ~YCoord,
-                 icon = {if (is.null(input$filterdata_compound_class)) {
-
-                          PPS_markers["blue_black"]
-
-                         } else {
-
-                           ~PPS_markers[group]
-
-                         }
-                        },
-                 options = pathOptions(pane = "PPS_filtered_layer"),
-                 popup = ~paste("<div style='max-height:810px' align='justify'>",
-                                "<h3>",
-                                paste0(Author,
-                                       " et al.",
-                                       ifelse(test = is.na(PubDate),
-                                              yes = "",
-                                              no = paste0(", ", PubDate))), "<br>",
-                                "</h3>",
-                                "<br/>",
-                                "<span style='font-size:12.7px'>",
-                                "<strong>Title</strong>", ": ",
-                                Title, "<br>",
-                                "<br/>",
-                                "<strong>Authors</strong>", ": ",
-                                Authors_name, "<br>",
-                                "<br/>",
-                                "<strong>Journal</strong>", ": ",
-                                paste0(ifelse(test = is.na(URL) & Journal == "Report could not be linked to a peer-reviewed publication." |
-                                                is.na(URL) & Journal != "Report could not be linked to a peer-reviewed publication." |
-                                                !is.na(URL) & Journal == "Report could not be linked to a peer-reviewed publication.",
-                                              yes = paste0(Journal),
-                                              no = paste0("<a href='", URL, "'", " target='_blank'>", Journal, "</a>"))), "<br>",
-                                "<br/>",
-                                Plot, "<br>",
-                                "<br/>",
-                                "<div style='line-height:13px'>",
-                                "<strong>Antibiotics</strong>", ": ",
-                                "</span>",
-                                "<span style='color:#a8a4a4; font-size:11px'>",
-                                Plot_caption,
-                                "</span>",
-                                "</div>",
-                                "</div>",
-                                sep = ""),
-                 label = ~as.character(paste0(Author,
-                                              ifelse(test = is.na(PubDate),
-                                                     yes = "",
-                                                     no = paste0(", ", PubDate)))),
-                 labelOptions = labelOptions(direction = "bottom",
-                                             style = list("font-size" = "12.7px"))
-                 # ,
-                 # clusterId = "filtered_markers_cluster",
-                 # clusterOptions = markerClusterOptions(iconCreateFunction = marker_cluster[[1]],
-                 #                                       zoomToBoundsOnClick = FALSE,
-                 #                                       removeOutsideVisibleBounds = FALSE,
-                 #                                       spiderfyDistanceMultiplier = 2,
-                 #                                       freezeAtZoom = 7)
-      ) %>%
-
-      addLegend(pal = P50_bw_palette,
-                values = 80:0,
-                opacity = 1,
-                title = "AMR [%]",
-                group = "AMR Hotspots bw",
-                layerId = "P50_bw_legend",
-                position = "bottomleft",
-                labFormat = labelFormat(transform = function(x) sort(x, decreasing = TRUE)))
-
-  })
-
-  # 2.2.1 ###= Conditionally add and remove the antibiotics class legend =#####
-  observeEvent(input$display_filtered_data, {
-
-    if (!is.null(input$filterdata_compound_class)) {
-
-      leafletProxy(mapId = "world_map") %>%
-
-        addLegend(pal = class_palette_GnYlRd,
-                  values = 100:0,
-                  opacity = 1,
-                  title = paste0("AMR to ",
-                                 gsub(pattern = " ",
-                                      replacement = "<br>",
-                                      x = unique(resistancebank$Class[resistancebank$Class_WHO == input$filterdata_compound_class])),
-                                 " [%]"),
-                  group = "AMR Hotspots bw",
-                  layerId = "class_legend",
-                  position = "bottomleft",
-                  labFormat = labelFormat(transform = function(x) sort(x, decreasing = TRUE)))
-
-    } else {
-
-      leafletProxy(mapId = "world_map") %>%
-
-        removeControl(layerId = "class_legend")
-
-    }
-
-  })
-
-  # 2.2.2 ###= Remove "dark" AMR map and markers and go back to initial AMR map =#####
-  observeEvent(input$close_filterdata_panel |
-               input$add_your_survey2 |
-               input$close_filterdata_panel_controls |
-               input$display_Country_report_panel |
-               input$display_about_panel |
-               input$display_limitations_panel, {
-
-    # if (any(input$world_map_groups %in% "AMR Hotspots")) {
-
-    leafletProxy(mapId = "world_map") %>%
-
-      hideGroup(group = "AMR Hotspots bw") %>%
-
-      clearMarkers() %>%
-
-      showGroup(group = "AMR Hotspots") %>% # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-      showGroup(group = "AMR Surveys") %>% # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-      removeControl(layerId = "P50_bw_legend") %>%
-
-      removeControl(layerId = "class_legend")
-
-    reset(id = "filterdata_ISO3")
-
-    reset(id = "filterdata_species")
-
-    reset(id = "filterdata_sample_origin")
-
-    reset(id = "filterdata_pathogen")
-
-    reset(id = "filterdata_compound")
-
-    reset(id = "filterdata_compound_class")
-
-    reset(id = "filterdata_compound_agisar")
-
-  })
-
-  # 2.3 #####===== Updates of map view and bounds with target input =====#####
-  observeEvent(input$zoom_to_location, {
-
-    target_zone <- geocode(location = input$target)
-
-    target_zone_center.lat <- target_zone$lat
-
-    target_zone_center.long <- target_zone$lon
-
-    target_zone.zoom <- 10
-
-    target_zone_bound1.lat <- target_zone_center.lat + 0.6
-
-    target_zone_bound1.long <- target_zone_center.long - 1.3
-
-    target_zone_bound2.lat <- target_zone_center.lat - 0.6
-
-    target_zone_bound2.long <- target_zone_center.long + 1.3
-
-    leafletProxy(mapId = "world_map") %>%
-
-      fitBounds(lat1 = target_zone_bound1.lat,
-                lng1 = target_zone_bound1.long,
-                lat2 = target_zone_bound2.lat,
-                lng2 = target_zone_bound2.long)
-
-  })
-
-  # 2.4 #####===== Back to initial world map view =====#####
-  observeEvent(input$initial_map_view, {
-
-    if (input$world_map_zoom >= 2.7) {
-
-      leafletProxy(mapId = "world_map") %>%
-
-        fitBounds(lat1 = map_initialview_data$target_zone_bound1.lat,
-                  lng1 = map_initialview_data$target_zone_bound1.long,
-                  lat2 = map_initialview_data$target_zone_bound2.lat,
-                  lng2 = map_initialview_data$target_zone_bound2.long)
-
-    }
-
-  })
-
-  # 2.5 #####===== New markers in case of files inside the folder =====#####
-  observe({
-
-    aws3_surveys_name <- get_bucket(bucket = "amr-hegep-bucket",
-                                    prefix = "temporary_responses/",
-                                    max = Inf)
-
-    aws3_surveys_name <- data.table::rbindlist(aws3_surveys_name)[["Key"]][-1]
-
-    if (length(aws3_surveys_name) != 0 & any(input$world_map_groups %in% "AMR Surveys")) {
-
-      aws3_surveys <- lapply(aws3_surveys_name, function(x) {
-
-        object <- get_object(object = x,
-                             bucket = "amr-hegep-bucket")
-
-        object_data <- readBin(con = object,
-                               what = "character")
-
-        read.csv(text = object_data,
-                 header = TRUE,
-                 stringsAsFactors = FALSE)
-
-      })
-
-  # Concatenate all data together into one data.frame
-      aws3_surveys_data <- do.call(what = rbind,
-                                   args = aws3_surveys)
-
-      leafletProxy(mapId = "world_map") %>%
-
-        addMapPane(name = "PPS_temporary",
-                   zIndex = 600) %>%
-
-        addMarkers(
-          lat = aws3_surveys_data$YCoord,
-          lng = aws3_surveys_data$XCoord,
-          icon = PPS_markers["lightblue_temp"],
-          group = "AMR Surveys",
-          clusterId = "temporary_markers_cluster",
-          popup = paste("<div style='max-height:810px' align='justify'>",
-                        "<h3>",
-                        paste0(aws3_surveys_data$Author,
-                               " et al.",
-                               ifelse(test = !is.na(aws3_surveys_data$PubDate),
-                                      yes = paste0(", ",
-                                                   aws3_surveys_data$PubDate),
-                                      no = "")), "<br>",
-                        "</h3>",
-                        "<br/>",
-                        "<span style='font-size:12.7px'>",
-                        ifelse(test = aws3_surveys_data$Title == "Report could not be linked to a peer-reviewed publication.",
-                               yes = paste("<em>Personal contribution from", paste0(aws3_surveys_data$Author,
-                                                                                    "."), "</em>"),
-                               no = paste("<strong>Title</strong>", ": ", aws3_surveys_data$Title,
-                                          sep = "")), "<br>",
-                        "<br/>",
-                        ifelse(test = grepl(pattern = "et al.",
-                                            x = aws3_surveys_data$Authors_name,
-                                            fixed = TRUE) == FALSE,
-                               yes = paste("<strong>Authors</strong>", ": ", aws3_surveys_data$Authors_name, "<br>", "<br/>",
-                                           sep = ""),
-                               no = paste("<span style='font-size:0.5px'>",
-                                          " ",
-                                          "</span>")),
-                        ifelse(test = aws3_surveys_data$Journal != "Report could not be linked to a peer-reviewed publication." &
-                                      aws3_surveys_data$Title != "Report could not be linked to a peer-reviewed publication.",
-                               yes = paste("<strong>Journal</strong>", ": ",
-                                           ifelse(test = is.na(aws3_surveys_data$URL),
-                                                  yes = aws3_surveys_data$Journal,
-                                                  no = paste0("<a href = '",
-                                                              aws3_surveys_data$URL,
-                                                              "'",
-                                                              " target='_blank'>",
-                                                              aws3_surveys_data$Journal,
-                                                              "</a>")), "<br>", "<br/>",
-                                           sep = ""),
-                               no = paste("<span style='font-size:0.5px'>",
-                                          " ",
-                                          "</span>")),
-                        aws3_surveys_data$Plot, "<br>",
-                        "<br/>",
-                        "<div style='line-height:13px'>",
-                        "<strong>Antibiotics</strong>", ": ",
-                        "</span>",
-                        "<span style='color:#a8a4a4; font-size:11px'>",
-                        aws3_surveys_data$Plot_caption,
-                        "</span>",
-                        "</div>",
-                        "</div>",
-                        sep = ""),
-          label = paste0(aws3_surveys_data$Author,
-                         ifelse(is.na(aws3_surveys_data$PubDate),
-                                yes = "",
-                                no = paste0(", ", aws3_surveys_data$PubDate))),
-          labelOptions = labelOptions(direction = "bottom",
-                                      style = list(
-                                        "font-size" = "12.7px"
-                                      )),
-          options = pathOptions(pane = "PPS_temporary")
-        ) %>%
-
-        addControl(html = "<strong>Surveys</strong></br>
-                           <img height='20' src='https://nicocriscuolo.github.io/resistancebank_plots/markers/marker_3D.png'> Reviewed</br>
-                           <img height='20' src='https://nicocriscuolo.github.io/resistancebank_plots/markers/marker_3D_lightblue.png'> Submitted",
-                   layerId = "temporary_legend",
-                   position = "bottomleft")
-
-    } else {
-
-      leafletProxy(mapId = "world_map") %>%
-
-        removeControl(layerId = "temporary_legend")
-
-    }
-
-  })
-
-  # 2.6 #####===== Reactive dataset for international P50 level =====#####
-  source(file = "modules/server_international-P50-level.R",
+  source(file = "modules/server_world-map.R",
          local = TRUE)$value
 
-  # 2.7 #####===== Close or hide panels when clicking on map background =====#####
-  observeEvent(input$world_map_click, {
-
-    hideElement(id = "add_your_survey_division",
-                anim = TRUE,
-                animType = "fade")
-
-    hideElement(id = "form",
-                anim = TRUE,
-                animType = "fade")
-
-    hideElement(id = "close_add_your_survey_controls",
-                anim = FALSE)
-
-    hideElement(id = "close_add_your_survey_controls2",
-                anim = FALSE)
-
-    showElement(id = "add_your_survey2",
-                anim = FALSE)
-
-    hideElement(id = "filterdata_panel_inputs",
-                anim = TRUE,
-                animType = "slide")
-
-    hideElement(id = "hide_filterdata_panel_inputs")
-
-    showElement(id = "show_filterdata_panel_inputs")
-
-    hideElement(id = "download_Country_report_panel",
-                anim = TRUE,
-                animType = "fade")
-
-    hideElement(id = "close_country_report_panel_controls",
-                anim = FALSE)
-
-    showElement(id = "display_Country_report_panel",
-                anim = FALSE)
-
-    hideElement(id = "about_panel",
-                anim = TRUE,
-                animType = "fade")
-
-    hideElement(id = "close_about_panel_controls",
-                anim = FALSE)
-
-    showElement(id = "display_about_panel",
-                anim = FALSE)
-
-    hideElement(id = "limitations_panel",
-                anim = TRUE,
-                animType = "fade")
-
-    hideElement(id = "close_limitations_panel_controls",
-                anim = FALSE)
-
-    showElement(id = "display_limitations_panel",
-                anim = FALSE)
-
-  })
-
   # 3. ##########========== DATA SUBMISSION ==========##########
-  # 3.1 ##########===== User information panel ===##########
-  observeEvent(input$show_user_information_panel, {
 
-    showElement(id = "user_information_panel",
-                anim = TRUE,
-                animType = "slide")
+  # 3.1.1 #####=== Operation on DOIs ===#####
 
-    hideElement(id = "show_user_information_panel")
-
-    showElement(id = "hide_user_information_panel")
-
-  })
-
-  observeEvent(input$hide_user_information_panel, {
-
-    hideElement(id = "user_information_panel",
-                anim = TRUE,
-                animType = "slide")
-
-    showElement(id = "show_user_information_panel")
-
-    hideElement(id = "hide_user_information_panel")
-
-  })
-
-  # 3.2 ##########===== Study information panel ===##########
-  observeEvent(input$show_study_information_panel, {
-
-    showElement(id = "study_information_panel",
-                anim = TRUE,
-                animType = "slide")
-
-    hideElement(id = "show_study_information_panel")
-
-    showElement(id = "hide_study_information_panel")
-
-  })
-
-  observeEvent(input$hide_study_information_panel, {
-
-    hideElement(id = "study_information_panel",
-                anim = TRUE,
-                animType = "slide")
-
-    showElement(id = "show_study_information_panel")
-
-    hideElement(id = "hide_study_information_panel")
-
-  })
-
-  # 3.2.1 #####=== Operation on DOIs ===#####
-
-  # 3.2.1.1 ###= Replacement of wrong parts of DOIs =#####
+  # 3.1.1.1 ###= Replacement of wrong parts of DOIs =#####
   DOI <- reactive({
 
     DOI <- input$doi
@@ -1542,50 +287,70 @@ server <- function(input, output, session) {
 
   })
 
-  # 3.2.1.2 ###= Bibliographic research =#####
+  # 3.1.1.2 ###= Bibliographic research =#####
   observe({
 
     if (DOI() != "" & nchar(DOI()) > 9) {
 
-      EPMC_SUMMARY <- europepmc::epmc_search(query = DOI())
+      refmanager_summary <- try(unlist(RefManageR::GetBibEntryWithDOI(doi = DOI())))
 
-      if (is.null(EPMC_SUMMARY)) {
+      if (class(refmanager_summary) != "try-error") {
 
-        journal_name.form <- ""
-        paper_title.form <- ""
-        publication_year.form <- c(1984:as.numeric(format(Sys.Date(), "%Y")) + 1)
+        if (is.null(refmanager_summary)) {
 
-        updateTextInput(session = session,
-                        inputId = "journal",
-                        value = "")
+          journal_name.form <- ""
+          paper_title.form <- ""
+          publication_year.form <- c(1984:as.numeric(format(Sys.Date(), "%Y")) + 1)
 
-        updateTextInput(session = session,
-                        inputId = "paper_title",
-                        value = "")
+          updateTextInput(session = session,
+                          inputId = "journal",
+                          value = "")
 
-        updateSelectizeInput(session = session,
-                             inputId = "PubDate",
-                             choices = publication_year.form,
-                             selected = "")
+          updateTextInput(session = session,
+                          inputId = "paper_title",
+                          value = "")
+
+          updateSelectizeInput(session = session,
+                               inputId = "PubDate",
+                               choices = publication_year.form,
+                               selected = "")
+
+        } else {
+
+          journal_name.form <- refmanager_summary$journal
+          paper_title.form <- refmanager_summary$title
+          publication_year.form <- refmanager_summary$year
+
+          updateTextInput(session = session,
+                          inputId = "journal",
+                          value = journal_name.form)
+
+          updateTextInput(session = session,
+                          inputId = "paper_title",
+                          value = paper_title.form)
+
+          updateSelectizeInput(session = session,
+                               inputId = "PubDate",
+                               choices = c(1984:as.numeric(format(Sys.Date(), "%Y")) + 1),
+                               selected = publication_year.form)
+
+        }
 
       } else {
 
-        journal_name.form <- EPMC_SUMMARY$journalTitle[[1]]
-        paper_title.form <- EPMC_SUMMARY$title[[1]]
-        publication_year.form <- EPMC_SUMMARY$pubYear[[1]]
-
         updateTextInput(session = session,
                         inputId = "journal",
-                        value = journal_name.form)
+                        value = "")
 
         updateTextInput(session = session,
                         inputId = "paper_title",
-                        value = paper_title.form)
+                        value = "")
 
         updateSelectizeInput(session = session,
                              inputId = "PubDate",
-                             choices = c(1984:as.numeric(format(Sys.Date(), "%Y")) + 1),
-                             selected = publication_year.form)
+                             choices = c("",
+                                         1984:as.numeric(format(Sys.Date(), "%Y")) + 1),
+                             selected = "")
 
       }
 
@@ -1609,70 +374,20 @@ server <- function(input, output, session) {
 
   })
 
-  # 3.3 ##########=== AMR panel ===##########
-  observeEvent(input$show_amr_panel, {
-
-    showElement(id = "amr_panel",
-                anim = TRUE,
-                animType = "slide")
-
-    hideElement(id = "show_amr_panel")
-
-    showElement(id = "hide_amr_panel")
-
-  })
-
-  observeEvent(input$hide_amr_panel, {
-
-    hideElement(id = "amr_panel",
-                anim = TRUE,
-                animType = "slide")
-
-    showElement(id = "show_amr_panel")
-
-    hideElement(id = "hide_amr_panel")
-
-  })
-
-  # 3.3.1 ###= Dynamic UI for AMR ####
+  # 3.2.1 ###= Dynamic UI for AMR ####
   source(file = "modules/server_antimicrobial-resistance-form.R",
          local = TRUE)$value
 
-  # 3.4 ##########=== Remark panel ===##########
-  observeEvent(input$show_remark_panel, {
+  # 3.3 ###############===== Form and Template datasets =====###############
 
-    showElement(id = "remark_panel",
-                anim = TRUE,
-                animType = "slide")
-
-    hideElement(id = "show_remark_panel")
-
-    showElement(id = "hide_remark_panel")
-
-  })
-
-  observeEvent(input$hide_remark_panel, {
-
-    hideElement(id = "remark_panel",
-                anim = TRUE,
-                animType = "slide")
-
-    showElement(id = "show_remark_panel")
-
-    hideElement(id = "hide_remark_panel")
-
-  })
-
-
-  # 3.5 ###############===== Form and Template datasets =====###############
-
-  # 3.5.1 #####=== Data input from Form ===#####
+  # 3.3.1 #####=== Data input from Form ===#####
   formData <- reactive({
 
   # Reverse geocoding to obtain coordinates
-    coordinates <- as.data.frame(geocode(location = input$coordinates))
+    coordinates <- as.data.frame(ggmap::geocode(location = input$coordinates))
 
-    if (is.na(coordinates$lat) | is.na(coordinates$lon)) {
+    if (is.na(coordinates$lat) |
+        is.na(coordinates$lon)) {
 
       coordinates$lat <- 47.367
 
@@ -1707,8 +422,8 @@ server <- function(input, output, session) {
                                               times = nrow(response_amr())),
                                 "Journal" = rep(x = input$journal,
                                                 times = nrow(response_amr())),
-                                "country_study" = rep(x = input$country_study,
-                                                      times = nrow(response_amr())),
+                                "ISO3" = rep(x = input$ISO3,
+                                             times = nrow(response_amr())),
                                 "study_address" = rep(x = gsub(pattern = ",",
                                                                replacement = "",
                                                                x = input$coordinates),
@@ -1761,8 +476,7 @@ server <- function(input, output, session) {
 
   })
 
-
-  # 3.5.2 #####=== Data input from Template ===#####
+  # 3.3.2 #####=== Data input from Template ===#####
   templateData <- reactive({
 
     req(input$upload_resistancebank_template)
@@ -1774,9 +488,11 @@ server <- function(input, output, session) {
                    template <- input$upload_resistancebank_template
 
                    resistancebank_template <- as.data.frame(readxl::read_excel(path = template$datapath,
-                                                                               sheet = 1,
+                                                                               sheet = "Template",
                                                                                col_names = TRUE,
-                                                                               na  = c("", " ", "NA")))
+                                                                               na  = c("",
+                                                                                       " ",
+                                                                                       "NA")))
 
                    setProgress(1)
 
@@ -1788,19 +504,19 @@ server <- function(input, output, session) {
 
   })
 
-  # 3.6 ##########===== Mandatory fields =====##########
+  # 3.4 ##########===== Mandatory fields =====##########
   source(file = "modules/server_mandatory-fields.R",
          local = TRUE)$value
 
-  # 3.7 #####===== Functions to save the data and upload them on Dropbox =====#####
+  # 3.5 #####===== Functions to save the data and upload them on Dropbox =====#####
 
-  # 3.7.1 #####=== Save form data ===#####
+  # 3.5.1 #####=== Save form data ===#####
 
   # Form unique filename
   source(file = "modules/server_unique-formname.R",
          local = TRUE)$value
 
-  # Save form function
+  # Define function to save the form in Dropbox
   save_form <- function(data) {
 
     filePath <- file.path(tempdir(), unique_formname())
@@ -1817,16 +533,17 @@ server <- function(input, output, session) {
 
   }
 
-  # 3.7.2 #####=== Save template data ===#####
+  # 3.5.2 #####=== Save template data ===#####
 
   # Template unique filename
   source(file = "modules/server_unique-templatename.R",
          local = TRUE)$value
 
-  # Save template function
+  # Define function to save the template in Dropbox
   save_template <- function(data) {
 
-    filePath <- file.path(tempdir(), unique_templatename())
+    filePath <- file.path(tempdir(),
+                          unique_templatename())
 
     write.table(x = data,
                 file = filePath,
@@ -1840,10 +557,10 @@ server <- function(input, output, session) {
 
   }
 
-  # 3.8 #####===== Save form data with submit button and thanks =====#####
+  # 3.6 #####===== Save form data with submit button and thanks =====#####
   observeEvent(input$submit, {
 
-  # 3.8.1 #####===== Check if author's email is valid =====#####
+  # 3.6.1 #####===== Check if author's email is valid =====#####
     if (grepl(pattern = "@",
               x = input$author_email,
               fixed = TRUE) == FALSE |
@@ -1863,7 +580,7 @@ server <- function(input, output, session) {
 
     } else {
 
-  # 3.8.2 ###= Preliminary operations =#####
+  # 3.6.2 ###= Preliminary operations =#####
       toggleState(id = "submit")
 
       reset(id = "form")
@@ -1880,14 +597,52 @@ server <- function(input, output, session) {
 
       form_csv <- formData()
 
+      # Add URL if DOI is available
+      refmanager_summary <- try(unlist(RefManageR::GetBibEntryWithDOI(doi = unique(form_csv$DOI))))
+
+      if (class(refmanager_summary) != "try-error") {
+
+        if (is.null(refmanager_summary$url)) {
+
+          form_csv$URL <- as.character(NA)
+
+        } else {
+
+          form_csv$URL <- as.character(refmanager_summary$url)
+
+        }
+
+      } else {
+
+        form_csv$URL <- as.character(NA)
+
+      }
+
+      # Add the DataEntryPerson variable to the form
+      form_csv$DataEntryPerson <- paste0(unique(form_csv$Author),
+                                         "_",
+                                         gsub(pattern = "-",
+                                              replacement = "",
+                                              x = Sys.Date()),
+                                         "_",
+                                         "FORM_SUBMISSION")
+
+      # Add the variables "name_of_location", "level_of_uncertainty", and "radius" as (NA)
+      form_csv$name_of_location <- as.character(NA)
+      form_csv$level_of_uncertainty <- as.character(NA)
+      form_csv$radius <- as.numeric(NA)
+
+      # Add the variables "StartDate", "EndDate", "Strain", and "Concg" as NA (for now)
+      form_csv$StartDate <- as.Date(NA)
+      form_csv$EndDate <- as.Date(NA)
+      form_csv$Strain <- as.character(NA)
+      form_csv$Concg <- as.character(NA)
+
+      # Save form to Dropbox
       save_form(form_csv)
 
-      # form_csv <- drop_read_csv(file = "temporary_directory/fxbxfb_xcvbxcvb_Albania(ALB)_1576594848c2fd05ee7216f7fad7666f29a1e6a2cf19b33c10.xlsx",
-      #                           header = TRUE,
-      #                           na.string = c("", " ", "NA"))
-
   # 3.8.3 ###= "Thank you" notification =#####
-      showNotification(ui = paste("Thank you, your contribution has been submitted successfully! Your data will be added to Resistance bank once approved by the curator."),
+      showNotification(ui = paste("Thank you! Your contribution has been submitted successfully. Your data will be added to resistancebank.org once approved by the curator."),
                        duration = 10,
                        closeButton = FALSE,
                        type = "default")
@@ -1901,13 +656,11 @@ server <- function(input, output, session) {
 
       } else {
 
-        form_csv$Title <- gsub(pattern = "&lt;i&gt;",
-                               replacement = "",
-                               x = form_csv$Title)
-
-        form_csv$Title <- gsub(pattern = "&lt;/i&gt;",
-                               replacement = "",
-                               x = form_csv$Title)
+        form_csv$Title <- form_csv$Title %>%
+          gsub(pattern = "&lt;i&gt;",
+               replacement = "") %>%
+          gsub(pattern = "&lt;/i&gt;",
+               replacement = "")
 
       }
 
@@ -1921,18 +674,30 @@ server <- function(input, output, session) {
   # Authors name
       if (!is.na(unique(form_csv$DOI)) & nchar(as.character(unique(form_csv$DOI))) > 9) {
 
-        EPMC_SUMMARY <- europepmc::epmc_search(query = unique(form_csv$DOI))
+        refmanager_summary <- try(unlist(RefManageR::GetBibEntryWithDOI(doi = unique(form_csv$DOI))))
 
-        if (is.null(EPMC_SUMMARY)) {
+        if (class(refmanager_summary) != "try-error") {
+
+          if (is.null(refmanager_summary)) {
+
+            form_csv$Authors_name <- paste0(unique(form_csv$author_name),
+                                            " ",
+                                            unique(form_csv$Author),
+                                            " et al.")
+
+          } else {
+
+            form_csv$Authors_name <- paste0(refmanager_summary$author,
+                                            collapse = ", ")
+
+          }
+
+        } else {
 
           form_csv$Authors_name <- paste0(unique(form_csv$author_name),
                                           " ",
                                           unique(form_csv$Author),
                                           " et al.")
-
-        } else {
-
-          form_csv$Authors_name <- EPMC_SUMMARY$authorString[[1]]
 
         }
 
@@ -1948,11 +713,19 @@ server <- function(input, output, session) {
   # URL
       if (!is.na(unique(form_csv$DOI)) & nchar(as.character(unique(form_csv$DOI))) > 9) {
 
-        DOI_URL <- try(europepmc::epmc_details(ext_id = europepmc::epmc_search(query = unique(form_csv$DOI))$id)$ftx$url)
+        DOI_URL <- try(unlist(RefManageR::GetBibEntryWithDOI(doi = unique(x = form_csv$DOI)))$url)
 
         if (class(DOI_URL) != "try-error") {
 
-          form_csv$URL <- DOI_URL
+          if (!is.null(DOI_URL)) {
+
+            form_csv$URL <- DOI_URL
+
+          } else {
+
+            form_csv$URL <- NA
+
+          }
 
         } else {
 
@@ -1975,7 +748,7 @@ server <- function(input, output, session) {
                          na.rm = TRUE)
 
   # 3.8.6 ###= Plot of the user submitted data =#####
-      source(file = "modules/server_unique-formplot.R",
+      source(file = "modules/server_unique-surveyplot.R",
              local = TRUE)$value
 
   # Temporary plot caption of unique antiobiotic names + codes
@@ -2022,12 +795,14 @@ server <- function(input, output, session) {
   # Popup content based on bibliographic informations available
       popup_content.form <- paste("<div style='max-height:810px' align='justify'>",
                                   "<h3>",
-                                  paste0(unique(form_csv$Author),
-                                         " et al.",
-                                         ifelse(test = !is.na(unique(form_csv$PubDate)),
-                                                yes = paste0(", ",
-                                                             unique(form_csv$PubDate)),
-                                                no = "")), "<br>",
+                                  paste0(ifelse(test = grepl(pattern = ",",
+                                                             x = unique(form_csv$Author)),
+                                                yes = sub(pattern = ",.*$",
+                                                          replacement = "",
+                                                          x = unique(form_csv$Author)),
+                                                no = unique(form_csv$Author)),
+                                         " et al., ",
+                                         unique(form_csv$PubDate)), "<br>",
                                   "</h3>",
                                   "<br/>",
                                   "<span style='font-size:12.7px'>",
@@ -2092,9 +867,8 @@ server <- function(input, output, session) {
           lng = unique(form_csv$XCoord),
           icon = PPS_markers["lightblue"],
           label = paste0(unique(form_csv$Author),
-                         ifelse(is.na(unique(form_csv$PubDate)),
-                                            yes = "",
-                                            no = paste0(", ", unique(form_csv$PubDate)))),
+                         ", ",
+                         unique(form_csv$PubDate)),
           labelOptions = labelOptions(direction = "bottom",
                                       style = list(
                                         "font-size" = "12.7px"
@@ -2111,39 +885,7 @@ server <- function(input, output, session) {
                   lat2 = form_csv_bound2.lat,
                   lng2 = form_csv_bound2.lon)
 
-  # 3.8.8 ###= Send authomatic e-mail with form link =#####
-      unique_formurl <- drop_share(path = paste0("temporary_directory/",
-                                                 unique_formname()))
-
-      email_form <- gmailr::gm_mime() %>%
-        gmailr::gm_subject(paste0("NEW RESBANK SUBMISSION - ",
-                                  substr(x = unique_formname(),
-                                         start = 1 ,
-                                         stop = nchar(x = unique_formname()) - 4))) %>%
-        gmailr::gm_from("nico.criscuolo1618@gmail.com") %>%
-        # gmailr::gm_to(c("nico.criscuolo981@gmail.com",
-        #                 "joao.pires@env.ethz.ch")) %>%
-        gmailr::gm_to("nico.criscuolo981@gmail.com") %>%
-        gmailr::gm_text_body(paste0(substr(x = unique_formname(),
-                                           start = 1 ,
-                                           stop = nchar(x = unique_formname()) - 4),
-                                    " ",
-                                    unique_formurl$url))
-
-      gmailr::gm_send_message(email_form)
-
-  # 3.8.9 ###= Notification in case of wrong coordinates =#####
-      if (unique(form_csv$YCoord) == "47.367" |
-          unique(form_csv$XCoord) == "8.551") {
-
-        showNotification(ui = paste("The geocode function could not retrieve the correct coordinates of your study, the curator will get in contact with you soon."),
-                         duration = 12,
-                         closeButton = FALSE,
-                         type = "error")
-
-      }
-
-  # 3.8.10 ###= Updates the 1 row file from the form in AWS3 for displaying of temporary markers =#####
+  # 3.8.8 ###= Updates the 1 row file from the form in AWS3 for displaying of temporary markers =#####
       survey_aws3 <- data.frame("Author" = unique(form_csv$Author),
                                 "YCoord" = unique(form_csv$YCoord),
                                 "XCoord" = unique(form_csv$XCoord),
@@ -2175,6 +917,58 @@ server <- function(input, output, session) {
                  bucket = "amr-hegep-bucket/temporary_responses",
                  acl = c("public-read"))
 
+  # 3.8.9 ###= Notification in case of wrong coordinates =#####
+      if (unique(form_csv$YCoord) == "47.367" |
+          unique(form_csv$XCoord) == "8.551") {
+
+        showNotification(ui = paste("The geocode function could not retrieve the correct coordinates of your study, the curator will get in contact with you soon."),
+                         duration = 12,
+                         closeButton = FALSE,
+                         type = "error")
+
+      }
+
+  # 3.8.10 ###= Send authomatic e-mail with form link =#####
+      unique_formurl <- drop_share(path = paste0("temporary_directory/",
+                                                 unique_formname()))
+
+      # E-mail for the resistancebank.org curators
+      email_form <- gmailr::gm_mime() %>%
+        gmailr::gm_subject(paste0("NEW RESBANK SUBMISSION - ",
+                                  substr(x = unique_formname(),
+                                         start = 1 ,
+                                         stop = nchar(x = unique_formname()) - 4))) %>%
+        gmailr::gm_from("healthgeographyandpolicy@gmail.com") %>%
+        gmailr::gm_to(c(
+          # "thomas.vanboeckel@env.ethz.ch",
+          "nico.criscuolo1618@gmail.com"
+        )) %>%
+        gmailr::gm_text_body(paste0(substr(x = unique_formname(),
+                                           start = 1 ,
+                                           stop = nchar(x = unique_formname()) - 4),
+                                    " ",
+                                    unique_formurl$url))
+
+      try(expr = gmailr::gm_send_message(email_form),
+          silent = FALSE)
+
+      # E-mail for users that submitted the form
+      email_for_user <- gmailr::gm_mime() %>%
+        gmailr::gm_subject("Your submission to resistancebank.org") %>%
+        gmailr::gm_from("healthgeographyandpolicy@gmail.com") %>%
+        gmailr::gm_to(c(unique(form_csv$Contact))) %>%
+        gmailr::gm_text_body(paste(paste0("Dear Dr. ",
+                                          unique(form_csv$Author),
+                                          ","),
+                                   "Thank you very much for submitting your data to resistancebank.org. Our curator will check your data shortly.",
+                                   "Don't hesitate to contact us for further questions or feedback.",
+                                   "Best regards,",
+                                   "The HEGEP team",
+                                   sep = "\n\n"))
+
+      try(expr = gmailr::gm_send_message(email_for_user),
+          silent = FALSE)
+
     }
 
   })
@@ -2195,9 +989,25 @@ server <- function(input, output, session) {
 
     template_csv <- templateData()
 
-    # template_csv <- as.data.frame(readxl::read_excel("~/Desktop/resistancebank_template/resistancebank_template.xlsx",
+    # Add the DataEntryPerson variable
+    if (is.na(unique(template_csv$DataEntryPerson))) {
+
+      template_csv$DataEntryPerson <- paste0(unique(template_csv$Author),
+                                             "_",
+                                             gsub(pattern = "-",
+                                                  replacement = "",
+                                                  x = Sys.Date()),
+                                             "_",
+                                             "TEMPLATE_SUBMISSION")
+
+    }
+
+    # template_csv <- as.data.frame(readxl::read_excel("~/Dropbox/nico/work/research/2019/PhD/resistancebank/datasets/template/resistancebank_template.xlsx",
     #                                                  col_names = TRUE,
-    #                                                  na = c("", " ", "NA")))
+    #                                                  sheet = "Example",
+    #                                                  na = c("",
+    #                                                         " ",
+    #                                                         "NA")))
 
     if (all(c(correct_names$template_csv_colnames) %in% colnames(template_csv)) == FALSE) {
 
@@ -2286,19 +1096,24 @@ server <- function(input, output, session) {
 
       }
 
-      template_csv$Compound <- as.character(template_csv$Compound)
+      if (length(which(is.na(template_csv$Contact))) > 0) {
+
+        template_csv$Contact[is.na(template_csv$Contact)] <- "E-mail contact not available"
+
+      }
 
       template_csv$Compound <- template_csv$Compound %>%
+        as.character() %>%
         str_replace_all(pattern = " ",
                         replacement = "")
 
-      if (any(is.na(template_csv$DOI)) == TRUE |
-          any(is.na(template_csv$Author)) == TRUE |
+      if (any(is.na(template_csv$Author)) == TRUE |
+          any(is.na(template_csv$PubDate)) == TRUE |
           any(is.na(template_csv$ISO3)) == TRUE |
           any(is.na(template_csv$YCoord)) == TRUE |
           any(is.na(template_csv$XCoord)) == TRUE |
           any(is.na(template_csv$Species)) == TRUE |
-          any(is.na(template_csv$SampleOrigin)) == TRUE |
+          any(is.na(template_csv$SampleType)) == TRUE |
           any(is.na(template_csv$Method)) == TRUE |
           any(is.na(template_csv$Pathogens)) == TRUE |
           any(is.na(template_csv$Compound)) == TRUE |
@@ -2306,13 +1121,13 @@ server <- function(input, output, session) {
           any(is.na(template_csv$Contact)) == TRUE) {
 
         template_csv_subset <- subset(x = template_csv,
-                                      select = c("DOI",
-                                                 "Author",
+                                      select = c("Author",
+                                                 "PubDate",
                                                  "ISO3",
                                                  "YCoord",
                                                  "XCoord",
                                                  "Species",
-                                                 "SampleOrigin",
+                                                 "SampleType",
                                                  "Method",
                                                  "Pathogens",
                                                  "Compound",
@@ -2338,6 +1153,13 @@ server <- function(input, output, session) {
                          closeButton = FALSE,
                          type = "error")
 
+      } else if (length(unique(template_csv$PubDate)) != 1) {
+
+        showNotification(ui = paste("The value of the PubDate column should be the same for every row of the template."),
+                         duration = 10,
+                         closeButton = FALSE,
+                         type = "error")
+
       } else if (length(unique(template_csv$ISO3)) != 1) {
 
         showNotification(ui = paste("The value of the ISO3 column should be the same for every row of the template."),
@@ -2348,13 +1170,6 @@ server <- function(input, output, session) {
       } else if (any(template_csv$Rescom > 100) == TRUE) {
 
         showNotification(ui = paste("The values inside the Rescom column should range from 0 to 100."),
-                         duration = 10,
-                         closeButton = FALSE,
-                         type = "error")
-
-      } else if (any(template_csv$NIsolates < 10) == TRUE) {
-
-        showNotification(ui = paste("The values inside the NIsolates column should be equal or higher than 10."),
                          duration = 10,
                          closeButton = FALSE,
                          type = "error")
@@ -2379,7 +1194,7 @@ server <- function(input, output, session) {
 
         }
 
-        showNotification(ui = "Thank you, your contribution has been submitted successfully! Your data will be added to Resistance bank once approved by the curator.",
+        showNotification(ui = "Thank you! Your contribution has been submitted successfully. Your data will be added to resistancebank.org once approved by the curator.",
                          duration = 10,
                          closeButton = FALSE,
                          type = "default")
@@ -2423,64 +1238,23 @@ server <- function(input, output, session) {
           str_replace(pattern = "doi.org/",
                       replacement = "") %>%
           str_replace_all(pattern = " ",
-                          replacement = "")
+                          replacement = "") %>%
+          trimws()
 
   # Species
         template_csv$Species <- template_csv$Species %>%
           str_replace_all(pattern = " ",
-                          replacement = "")
-
-        template_csv$Species <- correct_names$Species[apply(X = adist(x = template_csv$Species,
-                                                                      y = correct_names$Species),
-                                                            MARGIN = 1,
-                                                            FUN = which.min)]
-
-  # SampleOrigin
-        template_csv$SampleOrigin <- template_csv$SampleOrigin %>%
-          str_replace_all(pattern = ",",
                           replacement = "") %>%
-          str_replace_all(pattern = "\\.",
-                          replacement = "") %>%
-          str_replace_all(pattern = " ",
-                          replacement = "")
+          trimws()
 
-        template_csv$SampleOrigin <- correct_names$SampleOrigin[apply(X = adist(x = template_csv$SampleOrigin,
-                                                                                y = correct_names$SampleOrigin),
-                                                                      MARGIN = 1,
-                                                                      FUN = which.min)]
-
-  # Method
-        template_csv$Method <- template_csv$Method %>%
-          str_replace_all(pattern = " ",
-                          replacement = "") %>%
-          str_replace(pattern = "ad",
-                      replacement = "AD") %>%
-          str_replace(pattern = "Ad",
-                      replacement = "AD") %>%
-          str_replace(pattern = "aD",
-                      replacement = "AD") %>%
-          str_replace(pattern = "bd",
-                      replacement = "BD") %>%
-          str_replace(pattern = "Bd",
-                      replacement = "BD") %>%
-          str_replace(pattern = "bD",
-                      replacement = "BD") %>%
-          str_replace(pattern = "dd",
-                      replacement = "DD") %>%
-          str_replace(pattern = "Dd",
-                      replacement = "DD") %>%
-          str_replace(pattern = "dD",
-                      replacement = "DD")
-
-        template_csv$Method <- correct_names$Method[apply(X = adist(x = template_csv$Method,
-                                                                    y = correct_names$Method),
-                                                          MARGIN = 1,
-                                                          FUN = which.min)]
+        # template_csv$Species <- correct_names$Species[apply(X = adist(x = template_csv$Species,
+        #                                                               y = correct_names$Species),
+        #                                                     MARGIN = 1,
+        #                                                     FUN = which.min)]
 
   # Pathogens
         template_csv$Pathogens <- template_csv$Pathogens %>%
-          str_replace_all(pattern = " ",
-                          replacement = "")
+          trimws()
 
         template_csv$Pathogens <- correct_names$Pathogens[apply(X = adist(x = template_csv$Pathogens,
                                                                           y = correct_names$Pathogens),
@@ -2488,112 +1262,159 @@ server <- function(input, output, session) {
                                                                 FUN = which.min)]
 
   # Compound
-        template_csv$Compound <- sapply(X = 1:length(template_csv$Compound),
-                                        FUN = function(i) {
-
-                                          temporary_Antibiotics_df <- bind_rows(mutate_all(.tbl = Antibiotics_df,
-                                                                                           .funs = as.character),
-                                                                                mutate_all(.tbl = Antibiotics_df_common_names,
-                                                                                           .funs = as.character))
-
-                                          temporary_Compound_name <- temporary_Antibiotics_df$Name[apply(X = adist(x = template_csv$Compound[i],
-                                                                                                                   y = temporary_Antibiotics_df$Name),
-                                                                                                         MARGIN = 1,
-                                                                                                         FUN = which.min)]
-
-                                          if (temporary_Compound_name %in% c(Antibiotics_df_common_names$Name)) {
-
-                                            temporary_Antibiotics_df$Code[temporary_Antibiotics_df$Name == temporary_Compound_name]
-
-                                          } else {
-
-                                            lev_distance <- adist(x = template_csv$Compound[i],
-                                                                  y = correct_names$Compound)
-
-                                            if (any(lev_distance < 12) == TRUE) { # Check the correct number!
-
-                                              Antibiotics_df$Code[match(correct_names$Compound[apply(X = adist(x = template_csv$Compound[i],
-                                                                                                               y = correct_names$Compound),
-                                                                                                     MARGIN = 1,
-                                                                                                     FUN = which.min)],
-                                                                        Antibiotics_df$Name)]
-
-                                            } else {
-
-                                              template_csv$Compound[i]
-
-                                            }
-
-                                          }
-
-                                        })
+        # template_csv$Compound <- sapply(X = 1:length(template_csv$Compound),
+        #                                 FUN = function(i) {
+        #
+        #                                   temporary_Antibiotics_df <- bind_rows(mutate_all(.tbl = Antibiotics_df,
+        #                                                                                    .funs = as.character),
+        #                                                                         mutate_all(.tbl = Antibiotics_df_common_names,
+        #                                                                                    .funs = as.character))
+        #
+        #                                   temporary_Compound_name <- temporary_Antibiotics_df$Name[apply(X = adist(x = template_csv$Compound[i],
+        #                                                                                                            y = temporary_Antibiotics_df$Name),
+        #                                                                                                  MARGIN = 1,
+        #                                                                                                  FUN = which.min)]
+        #
+        #                                   if (temporary_Compound_name %in% c(Antibiotics_df_common_names$Name)) {
+        #
+        #                                     temporary_Antibiotics_df$Code[temporary_Antibiotics_df$Name == temporary_Compound_name]
+        #
+        #                                   } else {
+        #
+        #                                     lev_distance <- adist(x = template_csv$Compound[i],
+        #                                                           y = correct_names$Compound)
+        #
+        #                                     if (any(lev_distance < 12) == TRUE) { # Check the correct number!
+        #
+        #                                       Antibiotics_df$Code[match(correct_names$Compound[apply(X = adist(x = template_csv$Compound[i],
+        #                                                                                                        y = correct_names$Compound),
+        #                                                                                              MARGIN = 1,
+        #                                                                                              FUN = which.min)],
+        #                                                                 Antibiotics_df$Name)]
+        #
+        #                                     } else {
+        #
+        #                                       template_csv$Compound[i]
+        #
+        #                                     }
+        #
+        #                                   }
+        #
+        #                                 })
 
   # Save template in Dropbox
         save_template(template_csv)
 
   # 3.9.3 ###= Bibliographic research =#####
-        if (nchar(unique(template_csv$DOI)) > 9) {
+        if (!is.na(unique(template_csv$DOI)) &
+            nchar(unique(template_csv$DOI)) > 9) {
 
-          EPMC_SUMMARY <- europepmc::epmc_search(query = unique(template_csv$DOI))
+          refmanager_summary <- try(unlist(RefManageR::GetBibEntryWithDOI(doi = unique(template_csv$DOI))))
 
         } else {
 
-          EPMC_SUMMARY <- NULL
+          refmanager_summary <- NULL
 
         }
 
-  # Title
-        if (is.null(EPMC_SUMMARY)) {
+        # Title
+        if (is.na(unique(template_csv$Title))) {
 
-          template_csv$Title <- "Report could not be linked to a peer-reviewed publication."
+          if (class(refmanager_summary) != "try-error") {
 
-        } else {
+            if (is.null(refmanager_summary)) {
 
-          template_csv$Title <- EPMC_SUMMARY$title[[1]]
+              template_csv$Title <- "Report could not be linked to a peer-reviewed publication."
 
-          template_csv$Title <- gsub(pattern = "&lt;i&gt;",
-                                     replacement = "",
-                                     x = template_csv$Title)
+            } else {
 
-          template_csv$Title <- gsub(pattern = "&lt;/i&gt;",
-                                     replacement = "",
-                                     x = template_csv$Title)
+              template_csv$Title <- refmanager_summary$title %>%
+                gsub(pattern = "&lt;i&gt;",
+                     replacement = "") %>%
+                gsub(pattern = "&lt;/i&gt;",
+                     replacement = "") %>%
+                gsub(pattern = "&lt;sub&gt;",
+                     replacement = "") %>%
+                gsub(pattern = "&lt;/sub&gt;",
+                     replacement = "")
 
-        }
+            }
 
-  # Journal
-        if (is.null(EPMC_SUMMARY)) {
+          } else {
 
-          template_csv$Journal <- "Report could not be linked to a peer-reviewed publication."
+            template_csv$Title <- "Report could not be linked to a peer-reviewed publication."
 
-        } else {
-
-          template_csv$Journal <- EPMC_SUMMARY$journalTitle[[1]]
-
-        }
-
-  # Author's name
-        if (is.null(EPMC_SUMMARY)) {
-
-          template_csv$Authors_name <- paste0(unique(template_csv$Author),
-                                              " et al.")
-
-        } else {
-
-          template_csv$Authors_name <- EPMC_SUMMARY$authorString[[1]]
+          }
 
         }
 
-  # URL
-        DOI_URL <- try(europepmc::epmc_details(ext_id = europepmc::epmc_search(query = unique(template_csv$DOI))$id)$ftx$url)
+        # Jorunal
+        if (is.na(unique(template_csv$Journal))) {
 
-        if (class(DOI_URL) != "try-error") {
+          if (class(refmanager_summary != "try-error")) {
 
-          template_csv$URL <- DOI_URL
+            if (is.null(refmanager_summary)) {
+
+              template_csv$Journal <- "Report could not be linked to a peer-reviewed publication."
+
+            } else {
+
+              template_csv$Journal <- refmanager_summary$journal
+
+            }
+
+          } else {
+
+            template_csv$Journal <- "Report could not be linked to a peer-reviewed publication."
+
+          }
+
+        }
+
+        # Authors name
+        if (class(refmanager_summary) != "try-error") {
+
+          if (is.null(refmanager_summary)) {
+
+            paste0(unique(template_csv$Author),
+                   " et al.")
+
+          } else {
+
+            paste0(refmanager_summary$author,
+                   collapse = ", ")
+
+          }
 
         } else {
 
-          template_csv$URL <- NA
+          paste0(unique(template_csv$Author),
+                 " et al.")
+
+        }
+
+        # URL
+        if (is.na(unique(template_csv$URL))) {
+
+          DOI_URL <- try(unlist(RefManageR::GetBibEntryWithDOI(doi = unique(template_csv$DOI)))$url)
+
+          if (class(DOI_URL != "try-error")) {
+
+            if (is.null(refmanager_summary)) {
+
+              template_csv$URL <- NA
+
+            } else {
+
+              template_csv$URL <- DOI_URL
+
+            }
+
+          } else {
+
+            template_csv$URL <- NA
+
+          }
 
         }
 
@@ -2626,7 +1447,7 @@ server <- function(input, output, session) {
                              na.rm = TRUE)
 
   # 3.9.5 ###= Plot of the user submitted data through template =#####
-          source(file = "modules/server_unique-formplot.R",
+          source(file = "modules/server_unique-surveyplot.R",
                  local = TRUE)$value
 
   # Temporary plot caption with unique antibiotic codes and names
@@ -2733,12 +1554,14 @@ server <- function(input, output, session) {
   # Popup content based on bibliographic informations available
   popup_content.template <- paste("<div style='max-height:810px' align='justify'>",
                                   "<h3>",
-                                  paste0(temp_aws3_data$Author,
-                                         " et al.",
-                                         ifelse(test = !is.na(temp_aws3_data$PubDate),
-                                                yes = paste0(", ",
-                                                             temp_aws3_data$PubDate),
-                                                no = "")), "<br>",
+                                  paste0(ifelse(test = grepl(pattern = ",",
+                                                             x = temp_aws3_data$Author),
+                                                yes = sub(pattern = ",.*$",
+                                                          replacement = "",
+                                                          x = temp_aws3_data$Author),
+                                                no = temp_aws3_data$Author),
+                                         " et al., ",
+                                         temp_aws3_data$PubDate), "<br>",
                                   "</h3>",
                                   "<br/>",
                                   "<span style='font-size:12.7px'>",
@@ -2794,9 +1617,8 @@ server <- function(input, output, session) {
             lng = temp_aws3_data$XCoord,
             icon = PPS_markers["lightblue"],
             label = paste0(temp_aws3_data$Author,
-                           ifelse(is.na(temp_aws3_data$PubDate),
-                                  yes = "",
-                                  no = paste0(", ", temp_aws3_data$PubDate))),
+                           ", ",
+                           temp_aws3_data$PubDate),
             labelOptions = labelOptions(direction = "bottom",
                                         style = list(
                                           "font-size" = "12.7px"
@@ -2843,22 +1665,42 @@ server <- function(input, output, session) {
         unique_templateurl <- drop_share(path = paste0("temporary_directory/",
                                                        unique_templatename()))
 
+        # E-mail for the resistancebank.org curators
         email_template <- gmailr::gm_mime() %>%
           gmailr::gm_subject(paste0("NEW RESBANK SUBMISSION - ",
                                     substr(x = unique_templatename(),
                                            start = 1 ,
                                            stop = nchar(x = unique_templatename()) - 4))) %>%
-          gmailr::gm_from("nico.criscuolo1618@gmail.com") %>%
-          # gmailr::gm_to(c("nico.criscuolo981@gmail.com",
-          #                 "joao.pires@env.ethz.ch")) %>%
-          gmailr::gm_to("nico.criscuolo981@gmail.com") %>%
+          gmailr::gm_from("healthgeographyandpolicy@gmail.com") %>%
+          gmailr::gm_to(c(
+            # "thomas.vanboeckel@env.ethz.ch",
+            "nico.criscuolo1618@gmail.com"
+            )) %>%
           gmailr::gm_text_body(paste0(substr(x = unique_templatename(),
                                              start = 1 ,
                                              stop = nchar(x = unique_templatename()) - 4),
                                       " ",
                                       unique_templateurl$url))
 
-        gmailr::gm_send_message(email_template)
+        try(expr = gmailr::gm_send_message(email_template),
+            silent = FALSE)
+
+        # E-mail for users that submitted the form
+        email_for_user <- gmailr::gm_mime() %>%
+          gmailr::gm_subject("Your submission to resistancebank.org") %>%
+          gmailr::gm_from("healthgeographyandpolicy@gmail.com") %>%
+          gmailr::gm_to(c(unique(template_csv$Contact))) %>%
+          gmailr::gm_text_body(paste(paste0("Dear Dr. ",
+                                            unique(template_csv$Author),
+                                            ","),
+                                     "Thank you very much for submitting your data to resistancebank.org. Our curator will check your data shortly.",
+                                     "Don't hesitate to contact us for further questions or feedback.",
+                                     "Best regards,",
+                                     "The HEGEP team",
+                                     sep = "\n\n"))
+
+        try(expr = gmailr::gm_send_message(email_for_user),
+            silent = FALSE)
 
       }
 
@@ -2867,450 +1709,7 @@ server <- function(input, output, session) {
   })
 
   # 4. ##########========== DOWNLOAD DATA ==========####################
+  source(file = "modules/server_download-data.R",
+         local = TRUE)$value
 
-  # 4.1 #####==== Download resistancebank from the "Initial" panel =====#####
-  output$download_RESBANK2 <- downloadHandler(
-
-    filename <- function() {
-
-      paste0("resistancebank",
-             ".zip")
-
-    },
-
-    content <- function(file) {
-
-      download.file(url = "https://amr-hegep-bucket.s3.eu-central-1.amazonaws.com/Downloads/resistancebank.zip",
-                    destfile = file)
-
-    download_RESBANK2_reactive_values$download_number <- download_RESBANK2_reactive_values$download_number + 1
-
-  }, contentType = "application/zip")
-
-  # 4.2 #####==== Download resistancebank from the "Controls" panel =====#####
-  output$download_RESBANK <- downloadHandler(
-
-    filename <- function() {
-
-      paste0("resistancebank",
-             ".zip")
-
-    },
-
-    content <- function(file) {
-
-      download.file(url = "https://amr-hegep-bucket.s3.eu-central-1.amazonaws.com/Downloads/resistancebank.zip",
-                    destfile = file)
-
-    }, contentType = "application/zip")
-
-
-
-  # 4.3 #####==== Download and visualize resistancebank data from the "Filter data" panel =====#####
-
-  # 4.3.1 ###= Display download buttons, informations on filtered data, and error message =#####
-  output$filterdata_buttons_and_info <- renderUI({
-
-    if (nrow(resistancebank_filtered()) == nrow(resistancebank) &
-        all(is.null(c(input$filterdata_ISO3,
-                      input$filterdata_species,
-                      input$filterdata_sample_origin,
-                      input$filterdata_pathogen,
-                      input$filterdata_compound,
-                      input$filterdata_compound_class,
-                      input$filterdata_compound_agisar)))) {
-
-      return(NULL)
-
-    } else if (!all(c(input$filterdata_ISO3) %in% resistancebank_filtered()$ISO3) |
-               !all(c(input$filterdata_species) %in% resistancebank_filtered()$Species) |
-               !all(c(input$filterdata_sample_origin) %in% resistancebank_filtered()$SampleOrigin) |
-               !all(c(input$filterdata_pathogen) %in% resistancebank_filtered()$Pathogens) |
-               !all(c(input$filterdata_compound) %in% resistancebank_filtered()$Compound) |
-               !all(c(input$filterdata_compound_class) %in% resistancebank_filtered()$Class_WHO) |
-               !all(c(input$filterdata_compound_agisar) %in% resistancebank_filtered()$pathogen_compound)) {
-
-      tags$div(style = "text-align: center;
-                        padding: 10px 0px 0px 0px;",
-        tags$img(src = "filter-figures/error_message.png",
-                 width = "53.5%")
-      )
-
-
-    } else {
-
-      tags$table(style = "width: 100%;",
-                 tags$tr(tags$td(style = "width: 54%;
-                                          padding-top: 10px;",
-                                 align = "left",
-                                 tags$div(p("Database records: ",
-                                            style = "display: inline-block;"),
-                                          h5(textOutput(outputId = "resistancebank_filtered_rows"),
-                                             style = "display: inline-block;"))
-                         ),
-                         tags$td(style = "width: 46%;
-                                          padding-top: 10px;",
-                                 align = "center",
-                                 withBusyIndicatorUI(
-                                   downloadButton(outputId = "download_RESBANK_filtered",
-                                                  label = h5({if (nrow(resistancebank_filtered()) == nrow(resistancebank) &
-                                                                  any(!is.null(c(input$filterdata_ISO3,
-                                                                                 input$filterdata_species,
-                                                                                 input$filterdata_sample_origin,
-                                                                                 input$filterdata_pathogen,
-                                                                                 input$filterdata_compound,
-                                                                                 input$filterdata_compound_class,
-                                                                                 input$filterdata_compound_agisar)))) {
-
-                                                                  "Resistance bank"
-
-                                                                } else {
-
-                                                                  "Download data"
-
-                                                                }
-                                                             },
-                                                             style = "display: inline-block;"),
-                                                  style = "box-shadow: none!important;
-                                                           outline: 0;
-                                                           border-width: 0px;
-                                                           padding: 0px 5px 0px 5px;"))
-                         )
-                 ),
-                 tags$tr(tags$td(style = "width: 54%;",
-                                 align = "left",
-                                 tags$div(p("Peer-reviewed studies: ",
-                                            style = "display: inline-block;"),
-                                          h5(textOutput(outputId = "resistancebank_filtered_studies"),
-                                             style = "display: inline-block;"))
-                         ),
-                         tags$td(style = "width: 46%;
-                                          padding-right: 12px;",
-                                 align = "center",
-                                 actionButton(inputId = "display_filtered_data",
-                                              label = tags$div(icon(name = "map-marked-alt",
-                                                                    lib = "font-awesome"),
-                                                               h5("Show on map",
-                                                                  style = "display: inline-block;")),
-                                              style = "box-shadow: none!important;
-                                                       outline: 0;
-                                                       border-width: 0px;
-                                                       padding: 0px 5px 0px 5px;")
-                        )
-                 )
-      )
-
-    }
-
-  })
-
-  # 4.3.2 ###= Functions to download resistancebank after filtering the data =#####
-  output$download_RESBANK_filtered <- downloadHandler(
-
-    filename <- function() {
-
-      if (nrow(resistancebank_filtered()) == nrow(resistancebank)) {
-
-        paste0("resistancebank.zip")
-
-      } else {
-
-        paste0("resistancebank_filtered.zip")
-
-      }
-
-    },
-
-    content <- function(file) {
-
-      withBusyIndicatorServer(buttonId = "download_RESBANK_filtered", {
-
-        resistancebank_filtered <- resistancebank_filtered()
-
-        save_object(object = "Downloads/legend_resistancebank.docx",
-                    bucket = "amr-hegep-bucket",
-                    file = paste0(tempdir(),
-                                  "/legend_resistancebank.docx"),
-                    overwrite = TRUE)
-
-        resistancebank_filtered$Class_WHO <- NULL
-
-        resistancebank_filtered$pathogen_compound <- NULL
-
-        if (nrow(resistancebank_filtered()) == nrow(resistancebank)) {
-
-          download.file(url = "https://amr-hegep-bucket.s3.eu-central-1.amazonaws.com/Downloads/resistancebank.zip",
-                        destfile = file)
-
-        } else {
-
-          write.csv(x = resistancebank_filtered,
-                    file = paste0(tempdir(),
-                                  "/resistancebank_filtered.csv"),
-                    quote = TRUE,
-                    row.names = FALSE)
-
-          zip(zipfile = paste0(tempdir(),
-                               "/resistancebank_filtered.zip"),
-              files = c(paste0(tempdir(),
-                               "/legend_resistancebank.docx"),
-                        paste0(tempdir(),
-                               "/resistancebank_filtered.csv")),
-              extras = "-j")
-
-          file.remove(paste0(tempdir(),
-                             "/resistancebank_filtered.csv"))
-
-          put_object(file = paste0(tempdir(),
-                                   "/resistancebank_filtered.zip"),
-                     object = paste0("resistancebank_filtered.zip"),
-                     bucket = "amr-hegep-bucket/Downloads",
-                     acl = c("public-read"))
-
-          download.file(url = paste0("https://amr-hegep-bucket.s3.eu-central-1.amazonaws.com/Downloads/",
-                                     "resistancebank_filtered.zip"),
-                        destfile = file)
-
-          delete_object(object = paste0("Downloads/",
-                                        "resistancebank_filtered.zip"),
-                        bucket = "amr-hegep-bucket")
-
-          file.remove(paste0(tempdir(),
-                             "/legend_resistancebank.docx"))
-
-        }
-
-      })
-
-    }, contentType = "application/zip")
-
-  # 4.4 #####===== Download P50 layer =====#####
-  output$download_P50 <- downloadHandler(
-
-     filename <- function() {
-
-       paste0("P50_raster",
-              ".zip")
-
-     },
-
-     content <- function(file) {
-
-       download.file(url = "https://amr-hegep-bucket.s3.eu-central-1.amazonaws.com/Downloads/P50_raster.zip",
-                     destfile = file)
-
-     }, contentType = "application/zip")
-
-  # 4.5 #####===== Download Country Report =====#####
-
-  # Toggle state for Download button that generates the country report
-  observe({
-
-    toggleState(id = "download_Country_report",
-                condition = input$Country_report_nation != "")
-
-  })
-
-  # Functions to download the country report
-  output$download_Country_report <- downloadHandler(
-
-    filename <- function() {
-
-      paste0("AMR report - ",
-             subset(x = Countries_PPS,
-                    subset = is.element(el = Country_ISO3,
-                                        set = input$Country_report_nation))$Country,
-             ".pdf")
-
-    },
-
-    content <- function(file) {
-
-      withBusyIndicatorServer(buttonId = "download_Country_report", {
-
-        tempdir_Country_report <- file.path(tempdir(), "Country_report.Rmd")
-
-        tempdir_TimesNormal <- file.path(tempdir(), "Times.otf")
-
-        tempdir_TimesBold <- file.path(tempdir(), "TimesBold.otf")
-
-        file.copy(from = "Country_report.Rmd",
-                  to = tempdir_Country_report,
-                  overwrite = TRUE)
-
-        file.copy(from = "Times.otf",
-                  to = tempdir_TimesNormal,
-                  overwrite = TRUE)
-
-        file.copy(from = "TimesBold.otf",
-                  to = tempdir_TimesBold,
-                  overwrite = TRUE)
-
-        params <- list(ISO3 = subset(x = Countries_PPS,
-                                     subset = is.element(el = Country_ISO3,
-                                                         set = input$Country_report_nation))$ISO3,
-                       Country = subset(x = Countries_PPS,
-                                        subset = is.element(el = Country_ISO3,
-                                                            set = input$Country_report_nation))$Country,
-                       Country_ISO3 = subset(x = Countries_PPS,
-                                             subset = is.element(el = Country_ISO3,
-                                                                 set = input$Country_report_nation))$Country_ISO3,
-                       Continent = subset(x = Countries_PPS,
-                                          subset = is.element(el = Country_ISO3,
-                                                              set = input$Country_report_nation))$Continent,
-                       Population =  subset(x = Countries_PPS,
-                                            subset = is.element(el = Country_ISO3,
-                                                                set = input$Country_report_nation))$Population_2018,
-                       Density = subset(x = Countries_PPS,
-                                        subset = is.element(el = Country_ISO3,
-                                                            set = input$Country_report_nation))$Pop_density,
-                       GDP = subset(x = Countries_PPS,
-                                    subset = is.element(el = Country_ISO3,
-                                                        set = input$Country_report_nation))$GDP_2016,
-                       Antibiotics = subset(x = Countries_PPS,
-                                            subset = is.element(el = Country_ISO3,
-                                                                set = input$Country_report_nation))$Antibiotics_2013,
-                       PAG_2030 = subset(x = Countries_PPS,
-                                         subset = is.element(el = Country_ISO3,
-                                                             set = input$Country_report_nation))$PAG_2030,
-                       Cattle = subset(x = Countries_PPS,
-                                       subset = is.element(el = Country_ISO3,
-                                                           set = input$Country_report_nation))$Cattle,
-                       Chickens = subset(x = Countries_PPS,
-                                         subset = is.element(el = Country_ISO3,
-                                                             set = input$Country_report_nation))$Chickens,
-                       Pigs = subset(x = Countries_PPS,
-                                     subset = is.element(el = Country_ISO3,
-                                                         set = input$Country_report_nation))$Pigs,
-                       resistancebank_surveys = subset(x = resistancebank_surveys,
-                                                       subset = is.element(el = ISO3,
-                                                                           set = subset(x = Countries_PPS,
-                                                                                        subset = is.element(el = Country_ISO3,
-                                                                                                            set = input$Country_report_nation))$ISO3)),
-                       AMR_Exposure_data_rm = AMR_Exposure_data_rm(),
-                       resistancebank_amr = subset(x = resistancebank_amr,
-                                                   subset = is.element(el = ISO3,
-                                                                       set = subset(x = Countries_PPS,
-                                                                                    subset = is.element(el = Country_ISO3,
-                                                                                                        set = input$Country_report_nation))$ISO3))
-                       )
-
-        rmarkdown::render(tempdir_Country_report,
-                          output_file = file,
-                          params = params,
-                          envir = new.env(parent = globalenv()))
-
-      })
-
-    })
-
-  # Display the preview of the country report
-  output$country_report_images <- renderUI({
-
-    src = paste0("https://amr-hegep-bucket.s3.eu-central-1.amazonaws.com/Countries_information/Report_images/",
-                 gsub(pattern = " ",
-                      replacement = "+",
-                      x = subset(x = Countries_PPS,
-                                 subset = is.element(el = Country_ISO3,
-                                                     set = input$Country_report_nation))$Country),
-                 ".png")
-
-    tags$img(src = src,
-             width = "100%")
-
-  })
-
-  # 4.6 #####===== Download subset of resistancebank data based on Country =====#####
-  output$download_Country_data <- downloadHandler(
-
-    filename <- function() {
-
-      paste0("resistancebank_",
-             gsub(pattern = " ",
-                  replacement = "",
-                  subset(x = Countries_PPS,
-                         subset = is.element(el = Country_ISO3,
-                                             set = input$Country_report_nation))$Country),
-             ".zip")
-
-    },
-
-    content <- function(file) {
-
-      withBusyIndicatorServer(buttonId = "download_Country_data", {
-
-        resistancebank_subset <- subset(x = resistancebank,
-                                        subset = is.element(el = ISO3,
-                                                            set = subset(x = Countries_PPS,
-                                                                         subset = is.element(el = Country_ISO3,
-                                                                                             set = input$Country_report_nation))$ISO3))
-
-        resistancebank_subset$Class_WHO <- NULL
-
-        resistancebank_subset$pathogen_compound <- NULL
-
-        country_name <- gsub(pattern = " ",
-                             replacement = "",
-                             x = subset(x = Countries_PPS,
-                                        subset = is.element(el = Country_ISO3,
-                                                            set = input$Country_report_nation))$Country)
-
-        save_object(object = "Downloads/legend_resistancebank.docx",
-                    bucket = "amr-hegep-bucket",
-                    file = paste0(tempdir(),
-                                  "/legend_resistancebank.docx"),
-                    overwrite = TRUE)
-
-        write.csv(x = resistancebank_subset,
-                  file = paste0(tempdir(),
-                                "/resistancebank_",
-                                country_name,
-                                ".csv"),
-                  quote = TRUE,
-                  row.names = FALSE)
-
-        zip(zipfile = paste0(tempdir(),
-                             "/resistancebank_",
-                             country_name,
-                             ".zip"),
-            files = c(paste0(tempdir(),
-                             "/legend_resistancebank.docx"),
-                      paste0(tempdir(),
-                             "/resistancebank_",
-                             country_name,
-                             ".csv")),
-            extras = "-j")
-
-        put_object(file = paste0(tempdir(),
-                                 "/resistancebank_",
-                                 country_name,
-                                 ".zip"),
-                   object = paste0("resistancebank_",
-                                   country_name,
-                                   ".zip"),
-                   bucket = "amr-hegep-bucket/Downloads",
-                   acl = c("public-read"))
-
-        download.file(url = paste0("https://amr-hegep-bucket.s3.eu-central-1.amazonaws.com/Downloads/",
-                                   "resistancebank_",
-                                   country_name,
-                                   ".zip"),
-                      destfile = file)
-
-        delete_object(object = paste0("Downloads/",
-                                      "resistancebank_",
-                                      country_name,
-                                      ".zip"),
-                      bucket = "amr-hegep-bucket")
-
-        file.remove(paste0(tempdir(),
-                           "/legend_resistancebank.docx"))
-
-      })
-
-    }, contentType = "application/zip")
-
-  #########################=========================#########################
-
-} # Closes SERVER
-
+}

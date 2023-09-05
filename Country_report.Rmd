@@ -108,7 +108,9 @@ fig_table_end <- function() {
 ```{r P50 map, out.width="248pt", out.height="186pt"}
 selected_country <- params[["Country"]]
 
-download.file(url = paste0("https://amr-hegep-bucket.s3.eu-central-1.amazonaws.com/Countries_information/P50_rasters/",
+download.file(url = paste0(paste0("https://amr-hegep-bucket.s3.eu-central-1.amazonaws.com/downloads/",
+                                  version,
+                                  "/country_reports/other_plots/P50_rasters/"),
                     gsub(pattern = " ",
                          replacement = "+",
                          x = selected_country),
@@ -121,9 +123,9 @@ download.file(url = paste0("https://amr-hegep-bucket.s3.eu-central-1.amazonaws.c
           mode = 'wb')
 
 knitr::include_graphics(path = paste0(tempdir(),
-                                      gsub(pattern = " ",
-                                           replacement = "+",
-                                            x = selected_country),
+                                      gsub(x = selected_country,
+                                           pattern = " ",
+                                           replacement = "+"),
                                       ".png"))
 ```
 
@@ -142,15 +144,12 @@ knitr::include_graphics(path = paste0(tempdir(),
 ```{r piecharts, fig.align='center', fig.height=3}
 resistancebank_surveys <- params[["resistancebank_surveys"]]
 
-# resistancebank_surveys <- subset(resistancebank_surveys,
-#                                  is.element(el = ISO3,
-#                                             set = "ETH"))
-
 resistancebank_surveys$Study <- 1
 
 years <- data.frame("DOI" = "nostudy",
                     "PubDate" = as.character(seq(from = 2000,
-                                                 to = as.integer(format(Sys.Date(), "%Y")),
+                                                 to = max(x = as.integer(unique(resistancebank_surveys$PubDate)),
+                                                          na.rm = TRUE),
                                                  by = 1)),
                     "Study" = 0)
 
@@ -173,20 +172,24 @@ my_breaks <- seq(from = "2000",
 resistancebank_surveys$Type <- sapply(X = 1:nrow(resistancebank_surveys),
                                       FUN = function(i) {
                                         
-                                        if (grepl(pattern = "^[^0-9]",
-                                                  x = resistancebank_surveys$DOI[i]) == TRUE) {
+                                        if (is.na(resistancebank_surveys$Journal[i])) {
                                           
-                                          factor("Gray literature") 
+                                          return(NA)
+                                          
+                                        } else if (resistancebank_surveys$Journal[i] == 
+                                            "Report could not be linked to a peer-reviewed publication.") {
+                                          
+                                          as.character("Gray literature") 
                                           
                                         } else {
                                           
-                                          factor("Peer-reviewed")
+                                          as.character("Peer-reviewed")
                                           
                                         }
                                         
                                       })
 
-if (length(unique(resistancebank_surveys$Type)) == 2) {
+if (length(unique(na.omit(resistancebank_surveys$Type))) == 2) {
   
   resistancebank_surveys$Type <- factor(x = resistancebank_surveys$Type,
                                         levels = c("Gray literature",
@@ -233,10 +236,10 @@ au_piechart <- ggplot(data = country_data[1, ], # I've used the "Population" dat
                                   yes = "---",
                                   no = paste0(format(x = country_data$Value[8],
                                                      big.mark = ","),
-                                              " tons/y")),
+                                              " tonnes/y")),
                           ifelse(test = is.na(country_data$Value[9]),
                                  yes = "---",
-                                 no = paste0(ifelse(test = country_data$Value[9] > 0, yes = "+", no = ""), country_data$Value[9], "% in 2030")),
+                                 no = paste0(ifelse(test = country_data$Value[9] >= 0, yes = "+", no = ""), country_data$Value[9], "% in 2030")),
                           " ",
                           " ",
                           sep = "\n"),
@@ -305,9 +308,7 @@ livestock_piechart <- ggplot(data = livestock_data,
   scale_fill_manual(values = c("Cattle" = "#83C77A",
                                "Chickens" = "#F9A600",
                                "Pigs" = "#F5C0CD")[c(unique(livestock_data$Variable))],
-                    labels = c("Cattle",
-                               "Chicken",
-                               "Pig")) +
+                    labels = c(unique(livestock_data$Variable))) +
   labs(title = expression(paste(bold(Livestock), " ", bold(heads^2)))) +
   theme_void() +
   ggrepel::geom_text_repel(aes(label = Rounded),
@@ -426,6 +427,7 @@ gridExtra::grid.arrange(au_piechart,
 \vspace{4pt}
 
 ```{r, fig.align='center', fig.height=2.9}
+# Barplot of the studies per year
 ggplot(data = resistancebank_surveys,
        aes(x = as.factor(PubDate),
            y = Study,
@@ -438,7 +440,7 @@ ggplot(data = resistancebank_surveys,
              colour = "red",
              size = 0.8) +
     scale_fill_manual(values = c("Gray literature" = "#FF6C67",
-                                 "Peer-reviewed" = "#00C2C6")[c(unique(resistancebank_surveys$Type))]) +
+                                 "Peer-reviewed" = "#00C2C6")[c(unique(na.omit(resistancebank_surveys$Type)))]) +
     scale_x_discrete(breaks = my_breaks,
                      labels = label_fill(orig = my_breaks,
                                          .mod = 6)) +
@@ -465,7 +467,7 @@ ggplot(data = resistancebank_surveys,
 \setstretch{0.3}
 
 \begingroup\scriptsize
-\textbf{Figure 2}. Number of peer-reviewed surveys {`r if (sum(subset(x = resistancebank_surveys, subset = !is.element(el = DOI, set = "nostudy"))$Type == "Gray literature") != 0) {"and gray literature reports," } else {""}` }and average number of point-prevalence surveys per year (red line).
+\textbf{Figure 2}. Number of peer-reviewed surveys{`r if (sum(subset(x = resistancebank_surveys, subset = !is.element(el = DOI, set = "nostudy"))$Type == "Gray literature") != 0) {" and gray literature reports,"} else {""}`} and average number of point-prevalence surveys per year (red line).
 \endgroup
 
 `r fig_table_end()`
@@ -564,7 +566,9 @@ if (params[["ISO3"]] %in% params[["AMR_Exposure_data_rm"]]$ISO3) {
 ```{r, fig.align='right', out.height="297pt", out.width="475.2pt"}
 if (!(params[["ISO3"]] %in% params[["AMR_Exposure_data_rm"]]$ISO3)) {
   
-  download.file(url = "https://amr-hegep-bucket.s3.eu-central-1.amazonaws.com/Countries_information/amr_exposure_plot_report_transparent.png",
+  download.file(url = paste0("https://amr-hegep-bucket.s3.eu-central-1.amazonaws.com/downloads/",
+                             version,
+                             "/country_reports/other_plots/amr_exposure_plot_report_transparent.png"),
                 destfile = paste0(tempdir(),
                                   "amr_exposure_plot_report_transparent.png"),
                 mode = 'wb')
@@ -588,41 +592,7 @@ if (!(params[["ISO3"]] %in% params[["AMR_Exposure_data_rm"]]$ISO3)) {
 ```{r, fig.align='right', fig.height=2.3, fig.width=6.7}
 resistancebank_amr <- params[["resistancebank_amr"]]
 
-# s3load("resistancebank_amr.rda",
-#        "amr-hegep-bucket")
-
-# resistancebank_amr <- subset(resistancebank_amr,
-#                              is.element(ISO3,
-#                                         "NER"))
-
 if (nrow(resistancebank_amr) > 0) {
-
-  resistancebank_amr$DOI <- sapply(X = 1:nrow(resistancebank_amr),
-                FUN = function(i) {
-
-                  DOI <- resistancebank_amr$DOI[i]
-
-                  if (!is.na(DOI)) {
-
-                    return(as.character(DOI))
-
-                  } else {
-
-                    gsub(pattern = " ",
-                         replacement = "",
-                         x = paste0(resistancebank_amr$Author[i],
-                                    resistancebank_amr$PubDate[i],
-                                    "_",
-                                    substr(x = digest::digest(resistancebank_amr$YCoord[i]),
-                                           start = 1,
-                                           stop = 15),
-                                    substr(x = digest::digest(resistancebank_amr$XCoord[i]),
-                                           start = 1,
-                                           stop = 15)))
-
-                  }
-
-                })
   
   resistancebank_amr_list <- split(x = resistancebank_amr,
                                    f = list(resistancebank_amr$Author,
@@ -693,13 +663,17 @@ if (nrow(resistancebank_amr) > 0) {
                  size = 0.1) +
     scale_y_continuous(breaks = c(0, 50, 100),
                        limits = c(0, 100)) +
-    scale_fill_manual(values = c("Cattle" = "#83C77A",
+    scale_fill_manual(values = c("Buffalo" = "#F9766D",
+                                 "Cattle" = "#83C77A",
+                                 "Camel" = "#B8860B",
                                  "Chicken" = "#F9A600",
-                                 "Pig" = "#F5C0CD",
-                                 "Sheep" = "#BFBFBF",
                                  "Duck" = "#00BFC4",
-                                 "Buffalo" = "#F9766D",
-                                 "Horse" = "#C77CFF")[c(unique(as.character(resistancebank_amr$Species)))]) +
+                                 "Goat" = "#016400",
+                                 "Horse" = "#C77CFF",
+                                 "Pig" = "#F5C0CD",
+                                 "Rabbit" = "#FFDEAD",
+                                 "Sheep" = "#BFBFBF",
+                                 "Turkey" = "#1A74CD")[c(unique(as.character(resistancebank_amr$Species)))]) +
     scale_x_reordered() +
     facet_wrap(facets = ~Pathogens,
                scales = "free_x",
@@ -724,11 +698,11 @@ if (nrow(resistancebank_amr) > 0) {
           panel.grid.major.x = element_blank(),
           panel.grid.major.y = element_line(colour = "lightgray",
                                             size = 0.1),
-          legend.text = element_text(size = 6.8),
+          legend.text = element_text(size = 6.4),
           legend.title = element_blank(),
           legend.margin = margin(0, 0, 0, 0),
           legend.box.margin = margin(0, 0, 0, 0),
-          legend.key.size = unit(0.23, "cm"),
+          legend.key.size = unit(0.20, "cm"),
           legend.spacing.x = unit(0.1, 'cm'),
           legend.background = element_rect(color = NA))
   
@@ -767,7 +741,7 @@ if (nrow(resistancebank_amr) > 0) {
       theme(legend.key = element_rect(fill = NA,
                                       colour = "black",
                                       size = 0.1),
-            legend.position = c(0.97, 1.03))
+            legend.position = c(0.97, 0.99))
     
   }
   
@@ -779,7 +753,9 @@ if (nrow(resistancebank_amr) > 0) {
 ```{r, fig.align='right', out.height="294pt", out.width="470.4pt"}
 if (nrow(resistancebank_amr) == 0) {
   
-  download.file(url = "https://amr-hegep-bucket.s3.eu-central-1.amazonaws.com/Countries_information/plot_AGISAR_transparent.png",
+  download.file(url = paste0("https://amr-hegep-bucket.s3.eu-central-1.amazonaws.com/downloads/",
+                             version,
+                             "/country_reports/other_plots/plot_AGISAR_transparent.png"),
                 destfile = paste0(tempdir(),
                                   "plot_AGISAR_transparent.png"),
                 mode = 'wb')
@@ -787,6 +763,17 @@ if (nrow(resistancebank_amr) == 0) {
   knitr::include_graphics(path = paste0(tempdir(),
                                         "plot_AGISAR_transparent.png"))
   
+}
+```
+
+```{r, results="asis"}
+# Function to add link 
+myFun <- function(text, link, inline=TRUE) {
+  if(inline) {
+    paste("[", text, "](", link, ")", sep="")
+  } else {
+    cat("[", text, "](", link, ")", sep="")
+  }
 }
 ```
 
@@ -804,8 +791,8 @@ if (nrow(resistancebank_amr) == 0) {
 
 \begingroup\scriptsize
 \rule[2pt]{7cm}{0.3pt}\\
-$^1$Data updated to 2013. Source: \href{https://science.sciencemag.org/content/357/6358/1350}{Van Boeckel et al., Reducing antimicrobial use in food animals, Science 357, 1350 - 1352 (2017)}.\\
-$^2$Data updated to 2017. Source: \href{http://www.fao.org/faostat/en/\#data/QA}{FAOSTAT}.\\
+$^1$Data updated to 2020. Source: Mulchandani et al., Global trends in antimicrobial use in food-producing animals: 2020 to 2030 (Accepted).\\
+$^2$Data updated to 2022. Source: \href{http://www.fao.org/faostat/en/\#data/QA}{FAOSTAT}.\\
 $^3$Data updated to 2018. Source: \href{http://wdi.worldbank.org}{World Development Indicators}.\\  
 $^4$Data updated to 2016. Source: \href{https://data.worldbank.org/indicator/ny.gdp.mktp.cd}{World Bank Group}.\\
 \endgroup
@@ -821,7 +808,7 @@ $^4$Data updated to 2016. Source: \href{https://data.worldbank.org/indicator/ny.
 \endgroup
 \rule[2pt]{7.8cm}{0.3pt}\\
 \begingroup\tiny
-The information in this country-report result from the aggregation, and extrapolation of data from surveys conducted by independent scientists. It does not reflect the official positions of a country’s veterinary authorities on its antimicrobial resistance levels in animals. The detailed methodology and data source for this country-report are presented in \href{https://science.sciencemag.org/content/365/6459/eaaw1944?fbclid=IwAR28EBh4FvZXyrDmaIFCFcLdK_8yyku0AFfjUUbDvkn-S9OwEisEXA7S1zo}{Van Boeckel \& Pires, 2019}.
+The information in this country-report result from the aggregation, and extrapolation of data from surveys conducted by independent scientists. It does not reflect the official positions of {`r if (params[["Continent"]] == "Europe") {paste("the ", "\\href{https://www.efsa.europa.eu/en/efsajournal/pub/7209}{European Food Safety Authority}", " and")} else {""}`} the country’s veterinary authorities on antimicrobial resistance levels in animals in {`r params[["Country"]]`}. The detailed methodology and data source for this country-report are presented in \href{https://science.sciencemag.org/content/365/6459/eaaw1944?fbclid=IwAR28EBh4FvZXyrDmaIFCFcLdK_8yyku0AFfjUUbDvkn-S9OwEisEXA7S1zo}{Van Boeckel \& Pires, 2019}.
 \endgroup
 \end{minipage}}
 
