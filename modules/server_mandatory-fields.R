@@ -6,7 +6,8 @@
       all_mandatory_fields <- c("author_name",
                                 "Author",
                                 "author_email",
-                                "country_study",
+                                "PubDate",
+                                "ISO3",
                                 "coordinates",
                                 c(paste0(rep(x = "species_",
                                              times = input_number()),
@@ -33,7 +34,6 @@
                                          seq(from = 1,
                                              to = input_number(),
                                              by = 1))),
-                                # c(sapply(X = 1:length()))
                                 c(paste0(rep(x = "rescom_",
                                              times = input_number()),
                                          seq(from = 1,

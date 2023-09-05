@@ -26,7 +26,7 @@ br(),
                                img(src = "form-figures/pathogen.png",
                                    width = "70%",
                                    align = "center"),
-                               h6("Pathogen")
+                               h6(mandatory_asterisk("Pathogen"))
                        ),
                        tags$td(style = "width: 7.14%;",
                                align = "center",
@@ -50,6 +50,7 @@ br(),
                                h6("Resistance",
                                   tags$br(),
                                   mandatory_asterisk("prevalence"))
+
                        ),
                        tags$td(style = "width: 7.14%;",
                                align = "center",

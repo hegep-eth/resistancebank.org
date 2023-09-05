@@ -1,0 +1,6 @@
+
+  session$onSessionEnded(function() {
+
+    stopApp()
+
+  })

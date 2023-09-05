@@ -175,7 +175,7 @@ observeEvent(input$add_amr_test, {
                                              splitLayout(cellWidths = c("10%", "90%"),
                                                          actionButton(inputId = paste0("delete_row_",
                                                                                        input_number()),
-                                                                      label = div(icon(name = "times",
+                                                                      label = div(icon(name = "xmark",
                                                                                        lib = "font-awesome")),
                                                                       style = "color: #FFFFFF;
                                                                                border-radius: 50%;
@@ -188,17 +188,11 @@ observeEvent(input$add_amr_test, {
                                                          selectizeInput(inputId = paste0("species_",
                                                                                          input_number()),
                                                                         label =  NULL,
-                                                                        choices = c("Chicken" = "",
-                                                                                    "Buffalo",
-                                                                                    "Cattle",
-                                                                                    "Chicken",
-                                                                                    "Duck",
-                                                                                    "Horse",
-                                                                                    "Pig",
-                                                                                    "Sheep"),
+                                                                        choices = sort(c("Chicken" = "",
+                                                                                         correct_names$Species)),
                                                                         selected = species_value,
                                                                         width = "90%",
-                                                                        options = list(create = TRUE))
+                                                                        options = list(create = FALSE))
                                              )
                                      ),
                                      tags$td(style = "width: 7.14%;",
@@ -207,22 +201,10 @@ observeEvent(input$add_amr_test, {
                                                                              input_number()),
                                                             label = NULL,
                                                             choices = list("Meat" = "",
-                                                                           "Fecal" = c("Droppings",
-                                                                                       "Eggshells",
-                                                                                       "Litter",
-                                                                                       "Stools"),
-                                                                           "Food products" = c("Dairy products",
-                                                                                               "Eggs",
-                                                                                               "Meat"),
-                                                                           "Live animal" = c("Cloaca swabs",
-                                                                                             "Neck swabs",
-                                                                                             "Nose swabs",
-                                                                                             "Rectum swabs",
-                                                                                             "Skin swabs"),
-                                                                           "Slaughtered" = c("Blood",
-                                                                                             "Ceacal",
-                                                                                             "Gut",
-                                                                                             "Lymph nodes")),
+                                                                           "Fecal" = correct_names$SampleOrigin$Fecal,
+                                                                           "Killed animal" = correct_names$SampleOrigin$`Killed animal`,
+                                                                           "Living animal" = correct_names$SampleOrigin$`Living animal`,
+                                                                           "Product" = correct_names$SampleOrigin$Product),
                                                             selected = sample_origin_value,
                                                             width = "95%")
                                      ),
@@ -291,12 +273,12 @@ observeEvent(input$add_amr_test, {
                                                                              input_number()),
                                                             label = NULL,
                                                             choices = c("10" = "",
-                                                                        numbers),
+                                                                        1:200),
                                                             selected = nsamples_value,
                                                             width = "95%",
                                                             multiple = FALSE,
-                                                            options = list(create = FALSE,
-                                                                           maxOptions = 500))
+                                                            options = list(create = TRUE,
+                                                                           maxOptions = 200))
                                      ),
                                      tags$td(style = "width: 7.14%;",
                                              align = "center",
@@ -304,11 +286,11 @@ observeEvent(input$add_amr_test, {
                                                                              input_number()),
                                                             label = NULL,
                                                             choices = c("30" = "",
-                                                                        numbers[10:5000, ]), ############################################ !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                                                        1:200),
                                                             selected = isolates_value,
                                                             width = "95%",
                                                             multiple = FALSE,
-                                                            options = list(create = FALSE,
+                                                            options = list(create = TRUE,
                                                                            maxOptions = 491))
                                      ),
                                      tags$td(style = "width: 7.14%;",
@@ -798,6 +780,40 @@ response_amr <- reactive({
       response_amr <- response_amr[-c(deleted_rows()), ]
 
     }
+
+    response_amr$SampleType <- sapply(X = 1:nrow(response_amr),
+                                      FUN = function(i) {
+
+                                        if (response_amr$SampleOrigin[i] == "Droppings" |
+                                            response_amr$SampleOrigin[i] == "Eggshells" |
+                                            response_amr$SampleOrigin[i] == "Litter" |
+                                            response_amr$SampleOrigin[i] == "Stools") {
+
+                                          "Fecal"
+
+                                        } else if (response_amr$SampleOrigin[i] == "Blood" |
+                                                   response_amr$SampleOrigin[i] == "Ceacal" |
+                                                   response_amr$SampleOrigin[i] == "Gut" |
+                                                   response_amr$SampleOrigin[i] == "Lymph nodes" |
+                                                   response_amr$SampleOrigin[i] == "Organs") {
+
+                                          "KilledAnimal"
+
+                                        } else if (response_amr$SampleOrigin[i] == "Cloaca swabs" |
+                                                   response_amr$SampleOrigin[i] == "Neck swabs" |
+                                                   response_amr$SampleOrigin[i] == "Nose swabs" |
+                                                   response_amr$SampleOrigin[i] == "Rectum swabs" |
+                                                   response_amr$SampleOrigin[i] == "Skin swabs") {
+
+                                          "LivingAnimal"
+
+                                        } else {
+
+                                          "Product"
+
+                                        }
+
+                                      })
 
     return(response_amr)
 

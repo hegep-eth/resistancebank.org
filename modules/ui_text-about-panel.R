@@ -3,28 +3,39 @@ p(tags$div(style = "text-align: justify;
                     padding-left: 5px;
                     padding-right: 5px;
                     font-size: 1.190vmin;",
-           strong("What is Resistance bank?"), tags$br(),
-           "Resistance bank is an online repository for point prevalence surveys on antimicrobial
+           strong("What is resistancebank.org?"), tags$br(),
+           "resistancebank.org is an online repository for point prevalence surveys on antimicrobial
            resistance (AMR) in animals, with a focus on low and middle-income countries. It is
            aimed at providing the scientific community with a focal point to share information on
            AMR, and to help inform evidence-based policies by making global maps of AMR available
            to the public.", tags$br(),
            " ", tags$br(),
-           strong("What can you do to help?"), tags$br(),
-           "If you have published or are preparing a point prevalence survey, you can deposit your data
-           in Resistance bank using the ‘Add your survey’ button. Your name and your study will appear on the
-           interactive map.", tags$br(),
-           " ", tags$br(),
            strong("What are the hotspots of AMR?"), tags$br(),
            "The hotspots of AMR represents the proportion of antimicrobials used in each location (pixel)
-           with resistance higher than 50% (P50). For details on the methodology, see ", tags$a("Van Boeckel & Pires, Global Trends in Antimicrobial Resistance
-                                                                                                in Animals in Low- and Middle-Income Countries, Science 365, (2019)",
-                                                                                                href = "https://science.sciencemag.org/content/365/6459/eaaw1944",
-                                                                                                target = "_blank",
-                                                                                                .noWS = "outside"), ". The P50 map will be updated on a yearly basis.", tags$br(),
+           with resistance higher than 50% (P50).
+           For details on the methodology for terrestrial animals in South America, Africa, and Asia, see ",tags$a("Van Boeckel & Pires, 2019. Global Trends in Antimicrobial Resistance
+                                                                                                                   in Animals in Low- and Middle-Income Countries, Science 365 (6459)",
+                                                                                                                   href = "https://science.sciencemag.org/content/365/6459/eaaw1944",
+                                                                                                                   target = "_blank",
+                                                                                                                   .noWS = "outside"), " (the P50 map will be updated on a yearly basis).",
+           # "For details on the methodology for terrestrial animals in Europe, see ",
+           "For details on the methodology for aquatic animals, see ", tags$a("Schar et al., 2021. Twenty-year trends in antimicrobial resistance
+                                                                               from aquaculture and fisheries in Asia, Nature Communications 12 (5384)",
+                                                                             href = "https://doi.org/10.1038/s41467-021-25655-8",
+                                                                             target = "_blank",
+                                                                             .noWS = "outside"), ".", tags$br(),
+           " ", tags$br(),
+           strong("What can you do to help?"), tags$br(),
+           "If you have published or are preparing a point prevalence survey, you can deposit your data
+           in resistancebank.org using the ‘Add your survey’ button. Your name and your study will appear on the
+           interactive map. For information on uploading surveys, see ", tags$a("Criscuolo et al., 2021. resistancebank.org, an open-access repository
+                                                                                for surveys of antimicrobial resistance in animals, Scientific Data 8 (189)",
+                                                                                href = "https://www.nature.com/articles/s41597-021-00978-9",
+                                                                                target = "_blank",
+                                                                                .noWS = "outside"), ".", tags$br(),
            " ", tags$br(),
            strong("Team"), tags$br(),
-           "Resistance bank is manteined by the ", tags$a("Health Geography and Policy Group",
+           "resistancebank.org is maintained by the ", tags$a("Health Geography and Policy Group",
                                                           href = "https://thomasvanboeckel.wixsite.com/hegep#comp-k88wh8e4balata",
                                                           target = "_blank",
                                                           .noWS = "outside"),
@@ -40,7 +51,7 @@ p(tags$div(style = "text-align: justify;
            ", Washington DC.", tags$br(),
            " ", tags$br(),
            strong("Funding"), tags$br(),
-           "Resistance bank is supported by the ", tags$a("Swiss National Science Foundation",
+           "resistancebank.org is supported by the ", tags$a("Swiss National Science Foundation",
                                                           href = "http://www.snf.ch/en/Pages/default.aspx",
                                                           target = "_blank",
                                                           .noWS = "outside"),
@@ -50,25 +61,13 @@ p(tags$div(style = "text-align: justify;
                                .noWS = "outside"),
            ". Our generous funders had no role in study design.", tags$br(),
            " ", tags$br(),
-           strong("Open data license"), tags$br(),
-           "The database, maps, and country-reports available on Resistance bank are released under the ",
+           strong("Licenses & Copyright"), tags$br(),
+           "The database, maps, and country-reports available on resistancebank.org are released under the ",
            tags$a("Universal Creative Commons Zero (CC0)",
                   href = "https://wiki.creativecommons.org/wiki/CC0_use_for_data",
                   target = "_blank",
                   .noWS = "outside"),
            " public domain, which permits maximal use/re-use of data.", tags$br(),
-           " ", tags$br(),
-           strong("Disclaimer"), tags$br(),
-           "The information on this platform result from the aggregation, and extrapolation of data from surveys conducted by independent scientists.
-           It does not reflect the official positions of a country’s veterinary authorities on its antimicrobial resistance levels in animals. The detailed
-           methodology and data source are presented in ",
-           tags$a("Van Boeckel & Pires, 2019",
-                  href = "https://science.sciencemag.org/content/365/6459/eaaw1944?fbclid=IwAR28EBh4FvZXyrDmaIFCFcLdK_8yyku0AFfjUUbDvkn-S9OwEisEXA7S1zo",
-                  target = "_blank",
-                  .noWS = "outside"),
-           ".", tags$br(),
-           " ", tags$br(),
-           strong("Copyright"), tags$br(),
            "The images and the icons used on this website are free for non commercial use and were downloaded from ",
            tags$a("Font Awesome",
                   href = "https://fontawesome.com",
@@ -85,15 +84,19 @@ p(tags$div(style = "text-align: justify;
            tags$a("Pixabay",
                   href = "https://pixabay.com",
                   target = "_blank",
-                  .noWS = "outside"), " and ",
+                  .noWS = "outside"), ", and ",
            tags$a("PubChem",
                   href = "https://pubchem.ncbi.nlm.nih.gov",
                   target = "_blank",
                   .noWS = "outside"),
            ".", .noWS = c("after-begin", "before-end"), tags$br(),
            " ", tags$br(),
+           strong("Disclaimer"), tags$br(),
+           "The information on this platform result from the aggregation, and extrapolation of data from surveys conducted by independent scientists.
+           It does not reflect the official positions of a country’s veterinary authorities on its antimicrobial resistance levels in animals.", tags$br(),
+           " ", tags$br(),
            strong("Contact"), tags$br(),
-           a("thomasvanboeckel@resistancebank.org",
-             href = "mailto:thomasvanboeckel@resistancebank.org"), tags$br()
+           a("thomas.van.boeckel@gmail.com",
+             href = "mailto:thomas.van.boeckel@gmail.com"), tags$br()
   )
 )
